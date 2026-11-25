@@ -1,0 +1,3939 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoomMatch</title>
+  
+  <!-- Fontes & Ícones -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Estilos Externos -->
+  <link rel="stylesheet" href="index2.css">
+
+  <!-- Estilos Personalizados: Degradê Verde + Liquid Glass + Bordas Arredondadas + Modais Sociais + Scrollbar Liquid Glass -->
+  <style>
+    :root {
+      --liquid-bg: rgba(255, 255, 255, 0.58);
+      --liquid-bg-strong: rgba(255, 255, 255, 0.78);
+      --liquid-border: rgba(255, 255, 255, 0.88);
+      --liquid-shadow: 0 16px 40px rgba(38, 52, 40, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.95);
+      --spring-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --bounce-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Estilização Global da Barra de Rolagem (Estética Liquid Glass) */
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(124, 150, 116, 0.55) transparent;
+    }
+
+    body::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    body::-webkit-scrollbar-track {
+      background: rgba(244, 239, 225, 0.6);
+    }
+
+    body::-webkit-scrollbar-thumb {
+      background: rgba(124, 150, 116, 0.5);
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+    }
+
+    body::-webkit-scrollbar-thumb:hover {
+      background: rgba(107, 136, 98, 0.85);
+      border: 2px solid transparent;
+      background-clip: content-box;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: 
+        radial-gradient(
+          ellipse 65% 55% at 50% 42%, 
+          rgba(134, 166, 124, 0.36) 0%, 
+          rgba(162, 188, 153, 0.16) 42%, 
+          rgba(244, 239, 225, 0) 75%
+        ),
+        #f4efe1 !important;
+      background-attachment: fixed;
+    }
+
+    .page-container {
+      background: transparent !important;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ==================== CABEÇALHO & CENTRALIZAÇÃO EXATA DO TOGGLE ==================== */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .logo {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      transition: transform 0.35s var(--bounce-ease), background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: 0 8px 20px rgba(38, 52, 40, 0.08);
+    }
+
+    .logo.active-about {
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: 0 0 0 2px rgba(134, 166, 124, 0.45), 0 8px 20px rgba(38, 52, 40, 0.08);
+    }
+
+    .nav-toggle {
+      position: absolute !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      margin: 0 !important;
+      background: var(--liquid-bg) !important;
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid var(--liquid-border) !important;
+      box-shadow: var(--liquid-shadow);
+      border-radius: 999px !important;
+      transition: opacity 0.35s var(--spring-ease), transform 0.35s var(--spring-ease), visibility 0.35s;
+    }
+
+    .nav-toggle.is-hidden {
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateX(-50%) translateY(-6px) scale(0.96) !important;
+    }
+
+    @media (max-width: 640px) {
+      .nav-toggle {
+        position: static !important;
+        transform: none !important;
+      }
+      .nav-toggle.is-hidden {
+        transform: translateY(-6px) scale(0.96) !important;
+      }
+    }
+
+    .nav-indicator {
+      transition: left 0.42s var(--bounce-ease), width 0.42s var(--bounce-ease), opacity 0.25s ease !important;
+      border-radius: 999px !important;
+      box-shadow: 0 4px 14px rgba(124, 150, 116, 0.35);
+    }
+
+    .user-avatar {
+      cursor: pointer;
+      overflow: hidden;
+      flex-shrink: 0;
+      border-radius: 50% !important;
+      border: 2.5px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 6px 18px rgba(45, 58, 46, 0.14);
+      transition: transform 0.35s var(--bounce-ease), box-shadow 0.35s ease, border-color 0.3s ease;
+    }
+
+    .user-avatar:hover {
+      transform: scale(1.09) rotate(3deg);
+      box-shadow: 0 10px 24px rgba(45, 58, 46, 0.22);
+    }
+
+    .user-avatar.active-profile {
+      border-color: #7c9674;
+      box-shadow: 0 0 0 5px rgba(134, 166, 124, 0.28), 0 8px 20px rgba(45, 58, 46, 0.18);
+      transform: scale(1.05);
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    /* ==================== TRANSIÇÕES DE ABAS ==================== */
+    .tab-content {
+      flex: 1;
+    }
+
+    .tab-content.active-tab {
+      animation: tabReveal 0.48s var(--spring-ease) forwards;
+    }
+
+    @keyframes tabReveal {
+      from { opacity: 0; transform: translateY(14px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ==================== BARRA DE BUSCA INTERATIVA (LIQUID GLASS) ==================== */
+    .search-container {
+      position: relative;
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .search-bar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--liquid-bg-strong) !important;
+      backdrop-filter: blur(24px) saturate(175%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(175%) !important;
+      border: 1.5px solid var(--liquid-border) !important;
+      box-shadow: var(--liquid-shadow) !important;
+      border-radius: 999px !important;
+      padding: 7px 10px !important;
+      transition: transform 0.35s var(--spring-ease), box-shadow 0.35s ease;
+    }
+
+    .search-bar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 44px rgba(38, 52, 40, 0.12), inset 0 1px 1px rgba(255, 255, 255, 1) !important;
+    }
+
+    .search-pill {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border-radius: 999px !important;
+      border: 1.5px solid transparent !important;
+      padding: 9px 18px !important;
+      font-weight: 600;
+      color: #4f5b66;
+      background: rgba(255, 255, 255, 0.55);
+      cursor: pointer;
+      transition: all 0.28s var(--bounce-ease);
+      white-space: nowrap;
+    }
+
+    .search-pill:hover {
+      background: rgba(255, 255, 255, 0.9) !important;
+      color: #263327;
+      transform: translateY(-1px);
+    }
+
+    .search-pill.is-open,
+    .search-pill.has-value {
+      border-color: #263327 !important;
+      background: rgba(255, 255, 255, 0.96) !important;
+      color: #1c241d !important;
+      box-shadow: 0 4px 12px rgba(38, 52, 40, 0.08);
+    }
+
+    .pill-chevron {
+      font-size: 0.72rem;
+      opacity: 0.65;
+      transition: transform 0.3s var(--bounce-ease);
+    }
+
+    .search-pill.is-open .pill-chevron {
+      transform: rotate(180deg);
+    }
+
+    .pill-count-badge {
+      background: #7c9674;
+      color: #ffffff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 999px;
+    }
+
+    .quick-search-box {
+      display: flex;
+      align-items: center;
+      width: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: width 0.38s var(--spring-ease), opacity 0.25s ease, padding 0.3s ease;
+    }
+
+    .search-bar.search-expanded .quick-search-box {
+      width: 210px;
+      opacity: 1;
+      padding-left: 6px;
+    }
+
+    @media (max-width: 680px) {
+      .search-bar {
+        flex-wrap: wrap;
+        justify-content: center;
+        border-radius: 28px !important;
+      }
+      .search-bar.search-expanded .quick-search-box {
+        width: 100%;
+        padding: 4px 8px;
+      }
+    }
+
+    .quick-search-box input {
+      width: 100%;
+      border: none;
+      background: rgba(255, 255, 255, 0.75);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: #202921;
+      outline: none;
+      border: 1px solid rgba(134, 166, 124, 0.4);
+    }
+
+    .search-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50% !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.35s var(--bounce-ease), background 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+    }
+
+    .search-btn:hover,
+    .search-bar.search-expanded .search-btn {
+      background: #7c9674 !important;
+      color: #ffffff !important;
+      transform: scale(1.08);
+      box-shadow: 0 6px 16px rgba(124, 150, 116, 0.42);
+    }
+
+    .filter-popover {
+      position: absolute;
+      top: calc(100% + 14px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px) scale(0.97);
+      width: min(540px, 92vw);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.74) 100%);
+      backdrop-filter: blur(28px) saturate(185%);
+      -webkit-backdrop-filter: blur(28px) saturate(185%);
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+      border-radius: 30px;
+      padding: 22px 24px;
+      box-shadow: 
+        0 24px 54px rgba(32, 46, 34, 0.16),
+        inset 0 1.5px 2px rgba(255, 255, 255, 1);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.28s var(--spring-ease), transform 0.34s var(--bounce-ease), visibility 0.28s;
+    }
+
+    .filter-popover.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+
+    .popover-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .popover-title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #243125;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .popover-title i {
+      color: #7c9674;
+    }
+
+    .popover-clear-btn {
+      background: none;
+      border: none;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #6b786c;
+      cursor: pointer;
+      text-decoration: underline;
+      transition: color 0.2s ease;
+    }
+
+    .popover-clear-btn:hover {
+      color: #243125;
+    }
+
+    .topic-chips-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .topic-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1.5px solid rgba(134, 166, 124, 0.28);
+      color: #344235;
+      font-family: inherit;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.26s var(--bounce-ease);
+    }
+
+    .topic-chip:hover {
+      background: #ffffff;
+      border-color: #7c9674;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(38, 52, 40, 0.08);
+    }
+
+    .topic-chip.selected {
+      background: linear-gradient(135deg, #86a67c 0%, #6b8862 100%);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 6px 16px rgba(114, 143, 105, 0.35);
+    }
+
+    .popover-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(134, 166, 124, 0.22);
+    }
+
+    .filter-result-hint {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #5b695c;
+    }
+
+    .popover-apply-btn {
+      background: #263327;
+      color: #ffffff;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: transform 0.28s var(--bounce-ease), background 0.2s ease;
+    }
+
+    .popover-apply-btn:hover {
+      background: #394d3b;
+      transform: scale(1.04);
+    }
+
+    .active-filters-status {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: #324234;
+    }
+
+    .active-filters-status.visible {
+      display: flex;
+    }
+
+    .reset-all-filters-btn {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(134, 166, 124, 0.45);
+      padding: 5px 13px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #3b5235;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .reset-all-filters-btn:hover {
+      background: #ffffff;
+      transform: scale(1.04);
+    }
+
+    .no-results-card {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 42px 24px;
+      border-radius: 30px;
+      background: var(--liquid-bg-strong);
+      backdrop-filter: blur(20px);
+      border: 1.5px solid var(--liquid-border);
+      box-shadow: var(--liquid-shadow);
+      color: #2c3a2d;
+    }
+
+    /* ==================== MAPA E CARDS DA HOME ==================== */
+    .map-wrapper {
+      border-radius: 32px !important;
+      overflow: hidden;
+      border: 1.5px solid var(--liquid-border);
+      box-shadow: 0 18px 42px rgba(38, 52, 40, 0.09);
+      transition: transform 0.4s var(--spring-ease), box-shadow 0.4s ease;
+    }
+
+    .map-wrapper:hover {
+      box-shadow: 0 24px 52px rgba(38, 52, 40, 0.13);
+    }
+
+    .card,
+    .card-image-container {
+      border-radius: 30px !important;
+      overflow: hidden;
+    }
+
+    .card {
+      border: 1.5px solid rgba(255, 255, 255, 0.78);
+      box-shadow: 0 14px 34px rgba(38, 52, 40, 0.08);
+      transition: transform 0.45s var(--spring-ease), box-shadow 0.45s var(--spring-ease);
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.012);
+      box-shadow: 0 24px 48px rgba(38, 52, 40, 0.16);
+    }
+
+    .card .card-img {
+      transition: transform 0.65s var(--spring-ease);
+    }
+
+    .card:hover .card-img {
+      transform: scale(1.06);
+    }
+
+    .glass-overlay {
+      background: rgba(255, 255, 255, 0.74) !important;
+      backdrop-filter: blur(20px) saturate(175%) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(175%) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.9) !important;
+      border-radius: 26px !important;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.95);
+    }
+
+    .card-badge {
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .heart-icon {
+      background: rgba(255, 255, 255, 0.92) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      border-radius: 50% !important;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      transition: transform 0.35s var(--bounce-ease), color 0.25s ease;
+    }
+
+    .heart-icon:hover {
+      transform: scale(1.22);
+    }
+
+    .heart-icon.active {
+      color: #e05263 !important;
+      animation: heartPop 0.42s var(--bounce-ease);
+    }
+
+    .card-badge .rating {
+      background: rgba(255, 255, 255, 0.92) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      border-radius: 999px !important;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    @keyframes heartPop {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.4); }
+      100% { transform: scale(1.08); }
+    }
+
+    .more-btn {
+      border-radius: 999px !important;
+      transition: transform 0.3s var(--bounce-ease), background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .more-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    /* ==================== IMOBILIÁRIAS ==================== */
+    .realty-card {
+      border-radius: 34px !important;
+      transition: transform 0.45s var(--spring-ease), box-shadow 0.45s var(--spring-ease);
+      box-shadow: 0 16px 36px rgba(38, 52, 40, 0.08);
+    }
+
+    .realty-card:hover {
+      transform: translateY(-10px) scale(1.015);
+      box-shadow: 0 26px 52px rgba(38, 52, 40, 0.16);
+    }
+
+    .realty-card .card-image-wrapper {
+      border-radius: 26px !important;
+      overflow: hidden;
+    }
+
+    .realty-card .card-cover-img {
+      filter: grayscale(100%);
+      transition: filter 0.55s var(--spring-ease), transform 0.65s var(--spring-ease);
+    }
+
+    .realty-card:hover .card-cover-img {
+      filter: grayscale(0%);
+      transform: scale(1.06);
+    }
+
+    .logo-pill {
+      border-radius: 999px !important;
+      backdrop-filter: blur(14px) saturate(150%);
+      -webkit-backdrop-filter: blur(14px) saturate(150%);
+      transition: transform 0.35s var(--bounce-ease);
+    }
+
+    .realty-card:hover .logo-pill {
+      transform: scale(1.03);
+    }
+
+    .saiba-mais-btn {
+      border-radius: 999px !important;
+      background: rgba(255, 255, 255, 0.78) !important;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      transition: transform 0.3s var(--bounce-ease), background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .saiba-mais-btn:hover {
+      background: #ffffff !important;
+      transform: translateX(4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .saiba-mais-btn .icon-arrow {
+      transition: transform 0.3s var(--bounce-ease);
+    }
+
+    .saiba-mais-btn:hover .icon-arrow {
+      transform: translateX(4px);
+    }
+
+    /* ==================== PÁGINA INSTITUCIONAL: SOBRE A ROOMMATCH ==================== */
+    .about-wrapper {
+      max-width: 1080px;
+      margin: 24px auto 48px;
+      padding: 0 20px;
+    }
+
+    .about-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .liquid-panel {
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.76) 0%,
+        rgba(255, 255, 255, 0.48) 100%
+      );
+      backdrop-filter: blur(26px) saturate(180%);
+      -webkit-backdrop-filter: blur(26px) saturate(180%);
+      border: 1.5px solid rgba(255, 255, 255, 0.9);
+      border-radius: 34px;
+      box-shadow: 
+        0 20px 50px rgba(38, 52, 40, 0.08),
+        inset 0 1.5px 2px rgba(255, 255, 255, 0.98),
+        inset 0 -1px 2px rgba(134, 166, 124, 0.14);
+      transition: transform 0.4s var(--spring-ease), box-shadow 0.4s ease;
+    }
+
+    .liquid-panel:hover {
+      transform: translateY(-4px);
+      box-shadow: 
+        0 26px 56px rgba(38, 52, 40, 0.12),
+        inset 0 1.5px 2px rgba(255, 255, 255, 1);
+    }
+
+    .about-hero {
+      padding: 44px 42px;
+      text-align: center;
+      margin-bottom: 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(134, 166, 124, 0.22);
+      border: 1px solid rgba(134, 166, 124, 0.45);
+      color: #2f472a;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .about-hero-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+      font-weight: 700;
+      color: #1f2920;
+      line-height: 1.25;
+      margin: 0 0 16px;
+    }
+
+    .about-hero-desc {
+      max-width: 740px;
+      margin: 0 auto 28px;
+      font-size: 1.02rem;
+      line-height: 1.7;
+      color: #465447;
+    }
+
+    .about-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 780px) {
+      .about-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .about-hero {
+        padding: 32px 22px;
+      }
+    }
+
+    .stat-pill-box {
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(255, 255, 255, 0.92);
+      border-radius: 24px;
+      padding: 18px 14px;
+      transition: transform 0.35s var(--bounce-ease), background 0.25s ease;
+    }
+
+    .stat-pill-box:hover {
+      transform: translateY(-4px) scale(1.02);
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .stat-number {
+      display: block;
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #5b7853;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #4d5b4e;
+    }
+
+    .mvv-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-bottom: 26px;
+    }
+
+    @media (max-width: 840px) {
+      .mvv-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mvv-card {
+      padding: 30px 28px;
+    }
+
+    .mvv-icon-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #86a67c 0%, #6b8862 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 20px rgba(114, 143, 105, 0.32);
+    }
+
+    .mvv-card h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #202921;
+      margin: 0 0 10px;
+    }
+
+    .mvv-card p {
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: #4b594c;
+      margin: 0;
+    }
+
+    .about-bottom-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 840px) {
+      .about-bottom-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .about-detail-card {
+      padding: 32px;
+    }
+
+    .about-detail-card h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: #202921;
+      margin: 0 0 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(134, 166, 124, 0.3);
+    }
+
+    .pillar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .pillar-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(255, 255, 255, 0.88);
+      padding: 14px 16px;
+      border-radius: 22px;
+      transition: transform 0.3s var(--bounce-ease), background 0.25s ease;
+    }
+
+    .pillar-item:hover {
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateX(4px);
+    }
+
+    .pillar-item i {
+      color: #6b8862;
+      font-size: 1.1rem;
+      margin-top: 3px;
+    }
+
+    .pillar-item strong {
+      display: block;
+      font-size: 0.93rem;
+      color: #1f2920;
+      margin-bottom: 3px;
+    }
+
+    .pillar-item span {
+      font-size: 0.85rem;
+      color: #516052;
+      line-height: 1.5;
+    }
+
+    .contact-info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .contact-info-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+      color: #364437;
+      font-weight: 600;
+    }
+
+    .contact-info-row .c-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(134, 166, 124, 0.22);
+      color: #4f6c48;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .about-social-strip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .about-social-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(134, 166, 124, 0.4);
+      color: #3a4c3b;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.3s var(--bounce-ease);
+    }
+
+    .about-social-btn:hover {
+      background: #7c9674;
+      color: #ffffff;
+      border-color: transparent;
+      transform: translateY(-3px) scale(1.08);
+      box-shadow: 0 8px 18px rgba(114, 143, 105, 0.35);
+    }
+
+    .explore-cta-btn {
+      width: 100%;
+      justify-content: center;
+      background: linear-gradient(135deg, #86a67c 0%, #6b8862 100%);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      padding: 14px 24px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.94rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      box-shadow: 0 10px 24px rgba(114, 143, 105, 0.36);
+      transition: transform 0.35s var(--bounce-ease), box-shadow 0.3s ease;
+    }
+
+    .explore-cta-btn:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 14px 30px rgba(114, 143, 105, 0.46);
+    }
+
+    /* ==================== MODAL LIQUID GLASS: TELAS FIÉIS DAS REDES SOCIAIS ==================== */
+    .social-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(24, 34, 26, 0.42);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.32s var(--spring-ease), visibility 0.32s;
+    }
+
+    .social-modal-backdrop.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .social-liquid-bubble {
+      width: min(520px, 95vw);
+      max-height: 90vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: linear-gradient(
+        145deg,
+        rgba(255, 255, 255, 0.88) 0%,
+        rgba(255, 255, 255, 0.72) 100%
+      );
+      backdrop-filter: blur(34px) saturate(195%);
+      -webkit-backdrop-filter: blur(34px) saturate(195%);
+      border: 1.5px solid rgba(255, 255, 255, 0.98);
+      border-radius: 34px;
+      padding: 18px 20px 22px;
+      box-shadow: 
+        0 32px 72px rgba(20, 30, 22, 0.28),
+        inset 0 2px 3px rgba(255, 255, 255, 1);
+      transform: scale(0.9) translateY(18px);
+      transition: transform 0.4s var(--bounce-ease);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(124, 150, 116, 0.55) transparent;
+    }
+
+    .social-liquid-bubble::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .social-liquid-bubble::-webkit-scrollbar-track {
+      background: transparent;
+      margin-block: 24px;
+    }
+
+    .social-liquid-bubble::-webkit-scrollbar-thumb {
+      background: rgba(124, 150, 116, 0.45);
+      border-radius: 999px;
+      border: 3px solid transparent;
+      background-clip: content-box;
+      transition: background 0.25s ease;
+    }
+
+    .social-liquid-bubble::-webkit-scrollbar-thumb:hover {
+      background: rgba(107, 136, 98, 0.82);
+      border: 2px solid transparent;
+      background-clip: content-box;
+    }
+
+    .social-liquid-bubble::-webkit-scrollbar-button {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    .social-modal-backdrop.is-open .social-liquid-bubble {
+      transform: scale(1) translateY(0);
+    }
+
+    .social-liquid-bubble.is-wide {
+      width: min(680px, 96vw);
+    }
+
+    .social-bubble-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .social-browser-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(134, 166, 124, 0.35);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #364537;
+    }
+
+    .social-bubble-close {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(134, 166, 124, 0.35);
+      color: #202921;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s var(--bounce-ease), background 0.2s ease;
+    }
+
+    .social-bubble-close:hover {
+      background: #ffffff;
+      transform: rotate(90deg) scale(1.08);
+    }
+
+    .social-screen-frame {
+      background: #ffffff;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.07);
+      color: #0f0f0f;
+    }
+
+    /* ---------- 1. LAYOUT FIEL: INSTAGRAM ---------- */
+    .ig-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #efefef;
+    }
+
+    .ig-username {
+      font-weight: 800;
+      font-size: 0.98rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #111;
+    }
+
+    .ig-header-icons {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 1.05rem;
+      color: #111;
+    }
+
+    .ig-profile-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 8px;
+      gap: 16px;
+    }
+
+    .ig-avatar-ring {
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      flex-shrink: 0;
+    }
+
+    .ig-avatar-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #ffffff;
+      padding: 5px;
+      border: 2px solid #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ig-avatar-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .ig-stats {
+      flex: 1;
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+
+    .ig-stat strong {
+      display: block;
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #111;
+    }
+
+    .ig-stat span {
+      font-size: 0.76rem;
+      color: #555;
+    }
+
+    .ig-bio {
+      padding: 0 16px 10px;
+      font-size: 0.8rem;
+      line-height: 1.4;
+      color: #222;
+    }
+
+    .ig-handle-pill {
+      display: inline-block;
+      background: #efefef;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .ig-action-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 0 16px 14px;
+    }
+
+    .ig-btn {
+      border: none;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .ig-btn-primary {
+      background: #0095f6;
+      color: #ffffff;
+    }
+
+    .ig-btn-primary.following {
+      background: #efefef;
+      color: #111111;
+    }
+
+    .ig-btn-secondary {
+      background: #efefef;
+      color: #111111;
+    }
+
+    .ig-highlights {
+      display: flex;
+      gap: 14px;
+      padding: 0 16px 14px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .ig-highlights::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ig-highlight-item {
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .ig-highlight-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 1.5px solid #dbdbdb;
+      padding: 2px;
+      margin: 0 auto 4px;
+      overflow: hidden;
+    }
+
+    .ig-highlight-circle img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .ig-highlight-item span {
+      font-size: 0.7rem;
+      color: #262626;
+      display: block;
+    }
+
+    .ig-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid #dbdbdb;
+      text-align: center;
+    }
+
+    .ig-tab {
+      padding: 9px 0;
+      color: #8e8e8e;
+      font-size: 0.95rem;
+    }
+
+    .ig-tab.active {
+      color: #111;
+      border-bottom: 1.5px solid #111;
+    }
+
+    .ig-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: #fff;
+    }
+
+    .ig-grid-cell {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+    }
+
+    .ig-grid-cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ig-grid-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      color: #fff;
+      font-size: 0.75rem;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    /* ---------- 2. LAYOUT FIEL: FACEBOOK ---------- */
+    .fb-top-bar {
+      background: #1877f2;
+      color: #ffffff;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .fb-cover {
+      height: 118px;
+      background: linear-gradient(120deg, #dce8f8 0%, #86a67c 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .fb-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+    }
+
+    .fb-profile-section {
+      padding: 0 16px 14px;
+      position: relative;
+    }
+
+    .fb-avatar {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 4px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+      margin-top: -42px;
+      position: relative;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fb-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .fb-name {
+      margin: 8px 0 2px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #050505;
+    }
+
+    .fb-friends {
+      font-size: 0.8rem;
+      color: #65676b;
+      margin-bottom: 10px;
+    }
+
+    .fb-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .fb-btn-follow {
+      flex: 1;
+      background: #1877f2;
+      color: #ffffff;
+      border: none;
+      border-radius: 7px;
+      padding: 8px 14px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .fb-btn-msg {
+      flex: 1;
+      background: #e4e6eb;
+      color: #050505;
+      border: none;
+      border-radius: 7px;
+      padding: 8px 14px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .fb-subtabs {
+      display: flex;
+      gap: 8px;
+      padding: 8px 0;
+      border-top: 1px solid #e4e6eb;
+      border-bottom: 1px solid #e4e6eb;
+      margin-bottom: 12px;
+    }
+
+    .fb-pill-tab {
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #65676b;
+    }
+
+    .fb-pill-tab.active {
+      background: #e7f3ff;
+      color: #1877f2;
+    }
+
+    .fb-pinned-post {
+      background: #f7f8fa;
+      border: 1px solid #e4e6eb;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .fb-pinned-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #65676b;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .fb-post-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .fb-post-mini-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 3px;
+    }
+
+    .fb-post-mini-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* ---------- 3. LAYOUT FIEL: LINKEDIN ---------- */
+    .li-banner {
+      height: 112px;
+      background: linear-gradient(125deg, #0b3c5d 0%, #1d65a6 55%, #5b8fb9 100%);
+      position: relative;
+    }
+
+    .li-body {
+      padding: 0 20px 18px;
+    }
+
+    .li-avatar {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 4px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+      margin-top: -44px;
+      position: relative;
+      padding: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .li-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .li-title-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .li-title-row h3 {
+      margin: 0;
+      font-size: 1.22rem;
+      font-weight: 800;
+      color: #191919;
+    }
+
+    .li-verify-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border: 1.5px dashed #0a66c2;
+      color: #0a66c2;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+
+    .li-headline {
+      font-size: 0.86rem;
+      color: #191919;
+      margin: 5px 0 3px;
+      line-height: 1.4;
+    }
+
+    .li-hashtags {
+      font-size: 0.78rem;
+      color: #666666;
+      margin-bottom: 6px;
+    }
+
+    .li-location {
+      font-size: 0.78rem;
+      color: #666666;
+      margin-bottom: 8px;
+    }
+
+    .li-location a {
+      color: #0a66c2;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .li-connections {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #0a66c2;
+      margin-bottom: 14px;
+    }
+
+    .li-buttons-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .li-btn-primary {
+      background: #0a66c2;
+      color: #ffffff;
+      border: none;
+      border-radius: 999px;
+      padding: 7px 16px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .li-btn-outline {
+      background: transparent;
+      color: #0a66c2;
+      border: 1.5px solid #0a66c2;
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .li-btn-ghost {
+      background: transparent;
+      color: #5e5e5e;
+      border: 1.5px solid #7a7a7a;
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ---------- 4. LAYOUT FIEL: YOUTUBE ---------- */
+    .yt-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .yt-brand {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 800;
+      font-size: 0.92rem;
+      color: #0f0f0f;
+    }
+
+    .yt-brand i {
+      color: #ff0000;
+      font-size: 1.25rem;
+    }
+
+    .yt-search-mock {
+      flex: 1;
+      max-width: 240px;
+      display: flex;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+      overflow: hidden;
+      font-size: 0.75rem;
+      color: #777;
+    }
+
+    .yt-search-mock span {
+      flex: 1;
+      padding: 4px 8px;
+    }
+
+    .yt-search-mock button {
+      background: #f8f8f8;
+      border: none;
+      border-left: 1px solid #ccc;
+      padding: 4px 10px;
+      color: #555;
+    }
+
+    .yt-banner {
+      height: 92px;
+      background: linear-gradient(135deg, #6b8862 0%, #86a67c 50%, #4e6b46 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+      letter-spacing: 0.08em;
+    }
+
+    .yt-channel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px 10px;
+      gap: 12px;
+    }
+
+    .yt-channel-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .yt-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #f4efe1;
+      border: 1px solid #ddd;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .yt-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .yt-channel-info h4 {
+      margin: 0 0 2px;
+      font-size: 1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .yt-channel-info span {
+      font-size: 0.76rem;
+      color: #606060;
+    }
+
+    .yt-subscribe-btn {
+      background: #cc0000;
+      color: #ffffff;
+      border: none;
+      border-radius: 2px;
+      padding: 8px 14px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+    }
+
+    .yt-subscribe-btn.subscribed {
+      background: #ececec;
+      color: #606060;
+    }
+
+    .yt-nav-tabs {
+      display: flex;
+      gap: 18px;
+      padding: 0 18px;
+      border-bottom: 1px solid #e5e5e5;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #606060;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .yt-nav-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .yt-nav-tabs span {
+      padding: 8px 2px;
+      white-space: nowrap;
+    }
+
+    .yt-nav-tabs span.active {
+      color: #0f0f0f;
+      border-bottom: 2px solid #606060;
+    }
+
+    .yt-videos-section {
+      padding: 12px 18px 16px;
+      background: #f9f9f9;
+    }
+
+    .yt-section-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .yt-videos-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .yt-video-card {
+      background: #ffffff;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #eee;
+    }
+
+    .yt-thumb {
+      position: relative;
+      aspect-ratio: 16 / 9;
+    }
+
+    .yt-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .yt-duration {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      background: rgba(0, 0, 0, 0.82);
+      color: #ffffff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 1px 4px;
+      border-radius: 2px;
+    }
+
+    .yt-video-title {
+      padding: 6px 7px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #0f0f0f;
+      line-height: 1.3;
+    }
+
+    .social-external-footer {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .social-open-real-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: #263327;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      transition: transform 0.25s var(--bounce-ease), background 0.2s ease;
+    }
+
+    .social-open-real-btn:hover {
+      background: #3b4f3d;
+      transform: translateY(-2px);
+    }
+
+    /* ==================== ESTILOS DA TELA DE PERFIL (LIQUID GLASS) ==================== */
+    .profile-wrapper {
+      max-width: 980px;
+      margin: 26px auto 48px;
+      padding: 0 20px;
+    }
+
+    .profile-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .back-home-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: var(--liquid-bg-strong);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid var(--liquid-border);
+      box-shadow: var(--liquid-shadow);
+      color: #263327;
+      padding: 11px 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 0.35s var(--bounce-ease), background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .back-home-btn:hover {
+      background: rgba(255, 255, 255, 0.92);
+      transform: translateX(-4px);
+      box-shadow: 0 12px 28px rgba(38, 52, 40, 0.12);
+    }
+
+    .headline-badge {
+      background: var(--liquid-bg-strong) !important;
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      border: 1px solid var(--liquid-border);
+      border-radius: 999px !important;
+      padding: 8px 18px;
+      box-shadow: 0 6px 18px rgba(38, 52, 40, 0.06);
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      gap: 26px;
+      align-items: start;
+    }
+
+    @media (max-width: 820px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .profile-card {
+      position: relative;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.72) 0%,
+        rgba(255, 255, 255, 0.46) 100%
+      );
+      backdrop-filter: blur(26px) saturate(180%);
+      -webkit-backdrop-filter: blur(26px) saturate(180%);
+      border: 1.5px solid rgba(255, 255, 255, 0.88);
+      border-radius: 34px;
+      padding: 32px;
+      box-shadow: 
+        0 20px 50px rgba(38, 52, 40, 0.08),
+        inset 0 1.5px 2px rgba(255, 255, 255, 0.98),
+        inset 0 -1px 2px rgba(134, 166, 124, 0.15);
+      transition: transform 0.45s var(--spring-ease), box-shadow 0.45s ease;
+    }
+
+    .profile-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 
+        0 26px 58px rgba(38, 52, 40, 0.11),
+        inset 0 1.5px 2px rgba(255, 255, 255, 1);
+    }
+
+    .profile-summary {
+      text-align: center;
+    }
+
+    .avatar-upload-box {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 20px;
+    }
+
+    .avatar-preview {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #3a4552, #262e38);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.4rem;
+      overflow: hidden;
+      border: 4px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 14px 30px rgba(34, 44, 36, 0.18);
+      transition: transform 0.4s var(--bounce-ease);
+    }
+
+    .avatar-upload-box:hover .avatar-preview {
+      transform: scale(1.04);
+    }
+
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .change-photo-btn {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #86a67c, #6b8762);
+      color: #ffffff;
+      border: 3px solid #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(107, 135, 98, 0.45);
+      transition: transform 0.35s var(--bounce-ease), background 0.25s ease;
+    }
+
+    .change-photo-btn:hover {
+      background: linear-gradient(135deg, #74946a, #5c7654);
+      transform: scale(1.14) rotate(10deg);
+    }
+
+    .profile-display-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #202921;
+      margin: 0 0 4px;
+    }
+
+    .profile-display-email {
+      font-size: 0.88rem;
+      color: #5f6c60;
+      margin: 0 0 18px;
+      word-break: break-all;
+    }
+
+    .profile-badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(134, 166, 124, 0.22);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(134, 166, 124, 0.45);
+      color: #354c2f;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .remove-photo-link {
+      display: inline-block;
+      background: rgba(185, 74, 74, 0.1);
+      border: 1px solid rgba(185, 74, 74, 0.25);
+      border-radius: 999px;
+      padding: 6px 14px;
+      color: #9e3f3f;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .remove-photo-link:hover {
+      background: rgba(185, 74, 74, 0.18);
+      transform: scale(1.03);
+    }
+
+    .profile-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #242e25;
+      margin: 0 0 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(134, 166, 124, 0.3);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 26px;
+    }
+
+    @media (max-width: 600px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #39463a;
+      padding-left: 4px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper input,
+    .input-wrapper select {
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 18px;
+      border: 1.5px solid rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.9), 0 4px 12px rgba(38, 52, 40, 0.03);
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: #202921;
+      outline: none;
+      transition: all 0.3s var(--spring-ease);
+    }
+
+    .input-wrapper input:hover,
+    .input-wrapper select:hover {
+      background: rgba(255, 255, 255, 0.82);
+    }
+
+    .input-wrapper input:focus,
+    .input-wrapper select:focus {
+      border-color: #7c9674;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 0 0 4px rgba(134, 166, 124, 0.22), 0 8px 20px rgba(38, 52, 40, 0.06);
+      transform: translateY(-1px);
+    }
+
+    .toggle-pass-btn {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: none;
+      color: #637064;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: transform 0.25s var(--bounce-ease), color 0.2s ease;
+    }
+
+    .toggle-pass-btn:hover {
+      color: #2f3b30;
+      transform: scale(1.15);
+    }
+
+    .profile-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .btn-save-profile {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #86a67c 0%, #6b8862 100%);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      padding: 13px 30px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.94rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      box-shadow: 0 10px 24px rgba(114, 143, 105, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+      transition: transform 0.35s var(--bounce-ease), box-shadow 0.3s ease;
+    }
+
+    .btn-save-profile::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.38), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.65s ease;
+    }
+
+    .btn-save-profile:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 14px 30px rgba(114, 143, 105, 0.48), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+    }
+
+    .btn-save-profile:hover::after {
+      left: 150%;
+    }
+
+    .btn-save-profile:active {
+      transform: scale(0.98);
+    }
+
+    .toast-feedback {
+      display: none;
+      margin-top: 16px;
+      padding: 13px 20px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-align: center;
+      backdrop-filter: blur(14px);
+      animation: toastPop 0.35s var(--bounce-ease);
+    }
+
+    @keyframes toastPop {
+      from { opacity: 0; transform: translateY(8px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .toast-feedback.success {
+      display: block;
+      background: rgba(134, 166, 124, 0.28);
+      color: #2b4525;
+      border: 1px solid rgba(134, 166, 124, 0.55);
+    }
+
+    .toast-feedback.error {
+      display: block;
+      background: rgba(214, 92, 92, 0.2);
+      color: #8c2d2d;
+      border: 1px solid rgba(214, 92, 92, 0.45);
+    }
+
+    /* ==================== RODAPÉ INSTITUCIONAL (FULL-WIDTH) ==================== */
+    .site-footer {
+      width: 100vw;
+      position: relative;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+      margin-top: 72px;
+      margin-bottom: -40px;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.72) 0%,
+        rgba(255, 255, 255, 0.92) 100%
+      );
+      backdrop-filter: blur(24px) saturate(175%);
+      -webkit-backdrop-filter: blur(24px) saturate(175%);
+      border-top: 1.5px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 -12px 36px rgba(38, 52, 40, 0.05);
+      padding: 52px 6% 42px;
+      box-sizing: border-box;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-columns {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(180px, 260px));
+      gap: 48px;
+      margin-bottom: 44px;
+    }
+
+    @media (max-width: 760px) {
+      .footer-columns {
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .footer-columns {
+        grid-template-columns: 1fr;
+        gap: 26px;
+      }
+    }
+
+    .footer-col h4 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #202921;
+      margin: 0 0 18px;
+      letter-spacing: -0.01em;
+    }
+
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .footer-links a,
+    .footer-links button {
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #5c685d;
+      text-decoration: none;
+      cursor: pointer;
+      text-align: left;
+      transition: color 0.25s ease, transform 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-links a:hover,
+    .footer-links button:hover {
+      color: #4f6c48;
+      transform: translateX(3px);
+    }
+
+    .footer-social-icons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .social-circle-link {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(134, 166, 124, 0.35);
+      color: #4b594c;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s var(--bounce-ease);
+    }
+
+    .social-circle-link:hover {
+      background: #7c9674;
+      color: #ffffff;
+      border-color: transparent;
+      transform: translateY(-3px) scale(1.08);
+      box-shadow: 0 8px 18px rgba(114, 143, 105, 0.32);
+    }
+
+    .footer-divider {
+      border: none;
+      height: 1px;
+      background: rgba(134, 166, 124, 0.28);
+      margin: 0 0 26px;
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-legal-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      max-width: 560px;
+    }
+
+    .footer-mini-logo {
+      height: 26px;
+      width: auto;
+      opacity: 0.85;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .footer-legal-info p {
+      margin: 0;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      color: #6b776c;
+    }
+
+    .footer-policy-links {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 22px;
+    }
+
+    .footer-policy-links a {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #556256;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-policy-links a:hover {
+      color: #263327;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-container">
+
+    <!-- CABEÇALHO COM NAVEGAÇÃO -->
+    <header class="navbar">
+      <div class="logo" style="cursor: pointer;" id="logoAboutBtn" title="Conheça a RoomMatch">
+        <img src="Roomatch-logo.png" alt="ROOMMATCH Logo" class="brand-logo-img">
+      </div>
+
+      <!-- TOGGLE COM BALÃO INDICADOR DESLIZANTE (CENTRALIZADO) -->
+      <nav class="nav-toggle" id="navToggle">
+        <div class="nav-indicator"></div>
+        <button class="toggle-btn active" data-tab="home-page">Home</button>
+        <button class="toggle-btn" data-tab="imobiliarias-page">Imobiliárias</button>
+      </nav>
+
+      <!-- BOTÃO DO USUÁRIO (FIXO NO CANTO SUPERIOR DIREITO) -->
+      <div class="user-avatar" id="openProfileBtn" title="Meu Perfil e Configurações">
+        <i class="fa-solid fa-user" id="headerAvatarIcon"></i>
+        <img id="headerAvatarImg" src="" alt="Foto de Perfil">
+      </div>
+    </header>
+
+    <!-- ==================== PÁGINA 1: HOME ==================== -->
+    <div id="home-page" class="tab-content active-tab">
+      
+      <!-- BARRA DE BUSCA INTERATIVA COM TÓPICOS E PESQUISA -->
+      <div class="search-container" id="searchContainer">
+        <div class="search-bar" id="searchBar">
+          <button type="button" class="search-pill" data-filter="localizacao" id="pillLocalizacao">
+            <span id="labelLocalizacao">Localização</span>
+            <i class="fa-solid fa-chevron-down pill-chevron"></i>
+          </button>
+
+          <button type="button" class="search-pill" data-filter="tipo" id="pillTipo">
+            <span id="labelTipo">Tipo</span>
+            <i class="fa-solid fa-chevron-down pill-chevron"></i>
+          </button>
+
+          <button type="button" class="search-pill" data-filter="preferencias" id="pillPreferencias">
+            <span id="labelPreferencias">Preferências</span>
+            <span class="pill-count-badge" id="prefCountBadge" style="display: none;">0</span>
+            <i class="fa-solid fa-chevron-down pill-chevron"></i>
+          </button>
+
+          <!-- Campo expansível ao clicar na lupa -->
+          <div class="quick-search-box" id="quickSearchBox">
+            <input type="text" id="keywordSearchInput" placeholder="Buscar cidade, imóvel..." autocomplete="off">
+          </div>
+
+          <button type="button" class="search-btn" id="searchActionBtn" aria-label="Buscar" title="Pesquisar imóveis">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+
+          <!-- PAINEL DE TÓPICOS: LOCALIZAÇÃO -->
+          <div class="filter-popover" id="popover-localizacao">
+            <div class="popover-header">
+              <span class="popover-title"><i class="fa-solid fa-location-dot"></i> Escolha a localização</span>
+              <button type="button" class="popover-clear-btn" data-clear="localizacao">Limpar</button>
+            </div>
+            <div class="topic-chips-grid" id="chipsLocalizacao">
+              <button type="button" class="topic-chip selected" data-value="">Todas as cidades</button>
+              <button type="button" class="topic-chip" data-value="Sorocaba, São Paulo">Sorocaba, SP</button>
+              <button type="button" class="topic-chip" data-value="Campinas, São Paulo">Campinas, SP</button>
+              <button type="button" class="topic-chip" data-value="Brasília, Distrito Federal">Brasília, DF</button>
+              <button type="button" class="topic-chip" data-value="São Paulo, São Paulo">São Paulo, SP</button>
+              <button type="button" class="topic-chip" data-value="Barueri, São Paulo">Barueri, SP</button>
+              <button type="button" class="topic-chip" data-value="Guarulhos, São Paulo">Guarulhos, SP</button>
+            </div>
+            <div class="popover-footer">
+              <span class="filter-result-hint" id="hintLocalizacao">Mostrando todas as regiões</span>
+              <button type="button" class="popover-apply-btn" data-apply="localizacao">
+                <i class="fa-solid fa-check"></i> Aplicar
+              </button>
+            </div>
+          </div>
+
+          <!-- PAINEL DE TÓPICOS: TIPO -->
+          <div class="filter-popover" id="popover-tipo">
+            <div class="popover-header">
+              <span class="popover-title"><i class="fa-solid fa-house"></i> Tipo de imóvel</span>
+              <button type="button" class="popover-clear-btn" data-clear="tipo">Limpar</button>
+            </div>
+            <div class="topic-chips-grid" id="chipsTipo">
+              <button type="button" class="topic-chip selected" data-value="">Todos os tipos</button>
+              <button type="button" class="topic-chip" data-value="Casa"><i class="fa-solid fa-house-chimney"></i> Casa</button>
+              <button type="button" class="topic-chip" data-value="Apartamento"><i class="fa-solid fa-building"></i> Apartamento</button>
+              <button type="button" class="topic-chip" data-value="Cobertura"><i class="fa-solid fa-city"></i> Cobertura</button>
+            </div>
+            <div class="popover-footer">
+              <span class="filter-result-hint" id="hintTipo">Selecione a categoria desejada</span>
+              <button type="button" class="popover-apply-btn" data-apply="tipo">
+                <i class="fa-solid fa-check"></i> Aplicar
+              </button>
+            </div>
+          </div>
+
+          <!-- PAINEL DE TÓPICOS: PREFERÊNCIAS (MÚLTIPLA ESCOLHA) -->
+          <div class="filter-popover" id="popover-preferencias">
+            <div class="popover-header">
+              <span class="popover-title"><i class="fa-solid fa-sliders"></i> Suas preferências</span>
+              <button type="button" class="popover-clear-btn" data-clear="preferencias">Limpar todas</button>
+            </div>
+            <div class="topic-chips-grid" id="chipsPreferencias">
+              <button type="button" class="topic-chip" data-value="mobiliado"><i class="fa-solid fa-couch"></i> Mobiliado</button>
+              <button type="button" class="topic-chip" data-value="pets"><i class="fa-solid fa-paw"></i> Aceita pets</button>
+              <button type="button" class="topic-chip" data-value="metro"><i class="fa-solid fa-train-subway"></i> Próx. ao Metrô</button>
+              <button type="button" class="topic-chip" data-value="garagem"><i class="fa-solid fa-car"></i> Vaga de garagem</button>
+              <button type="button" class="topic-chip" data-value="varanda"><i class="fa-solid fa-sun"></i> Varanda / Terraço</button>
+              <button type="button" class="topic-chip" data-value="ar"><i class="fa-solid fa-snowflake"></i> Ar-condicionado</button>
+            </div>
+            <div class="popover-footer">
+              <span class="filter-result-hint" id="hintPreferencias">Selecione um ou mais tópicos</span>
+              <button type="button" class="popover-apply-btn" data-apply="preferencias">
+                <i class="fa-solid fa-magnifying-glass"></i> Ver imóveis
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RESUMO DE RESULTADOS FILTRADOS -->
+        <div class="active-filters-status" id="activeFiltersStatus">
+          <span id="filterSummaryText">Exibindo 6 imóveis</span>
+          <button type="button" class="reset-all-filters-btn" id="resetAllFiltersBtn">Limpar filtros</button>
+        </div>
+      </div>
+
+      <!-- CONTEÚDO PRINCIPAL (MAPA + CARDS) -->
+      <main class="main-content">
+        <div class="map-wrapper">
+          <iframe 
+            id="homeMapIframe"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d467690.1438961028!2d-46.92495935413983!3d-23.682063548955284!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce448183a461d1%3A0x9ba94b08ff335bae!2zU8OjbyBQYXVsbywgU1A!5e0!3m2!1spt-BR!2sbr!4v1793384687220!5m2!1spt-BR!2sbr" 
+            width="100%" 
+            height="100%" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy">
+          </iframe>
+        </div>
+
+        <section class="cards-grid" id="cardsGrid">
+          <!-- CARD 1 -->
+          <article class="card" data-location="Sorocaba, São Paulo" data-type="Casa" data-prefs="pets,garagem,varanda">
+            <div class="card-image-container">
+              <img class="card-img" src="Casa-case1.jpg" alt="Sorocaba, São Paulo">
+              <div class="card-badge">
+                <button class="heart-icon" aria-label="Favoritar"><i class="fa-regular fa-heart"></i></button>
+                <span class="rating">4.3 <i class="fa-solid fa-star"></i></span>
+              </div>
+              <div class="glass-overlay">
+                <div class="location-title">
+                  <i class="fa-solid fa-location-dot"></i>
+                  Sorocaba, São Paulo
+                </div>
+                <div class="card-footer">
+                  <div class="sub-logo">
+                    <img src="Franciosi-circle-Icon.jpeg" alt="Logo" class="logo-img">
+                  </div>
+                  <a href="imoveis.html" class="more-btn">Mais sobre ...</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 2 -->
+          <article class="card" data-location="Campinas, São Paulo" data-type="Apartamento" data-prefs="mobiliado,garagem,ar,varanda">
+            <div class="card-image-container">
+              <img class="card-img" src="Apartamento-case2.jpg" alt="Campinas, São Paulo">
+              <div class="card-badge">
+                <button class="heart-icon" aria-label="Favoritar"><i class="fa-regular fa-heart"></i></button>
+                <span class="rating">5.0 <i class="fa-solid fa-star"></i></span>
+              </div>
+              <div class="glass-overlay">
+                <div class="location-title">
+                  <i class="fa-solid fa-location-dot"></i>
+                  Campinas, São Paulo
+                </div>
+                <div class="card-footer">
+                  <div class="sub-logo">
+                    <img src="Franciosi-circle-Icon.jpeg" alt="Logo" class="logo-img">
+                  </div>
+                  <a href="imoveis.html" class="more-btn">Mais sobre ...</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 3 -->
+          <article class="card" data-location="Brasília, Distrito Federal" data-type="Apartamento" data-prefs="mobiliado,metro,ar">
+            <div class="card-image-container">
+              <img class="card-img" src="Apartamento-case3.jpg" alt="Brasília, Distrito Federal">
+              <div class="card-badge">
+                <button class="heart-icon" aria-label="Favoritar"><i class="fa-regular fa-heart"></i></button>
+                <span class="rating">4.7 <i class="fa-solid fa-star"></i></span>
+              </div>
+              <div class="glass-overlay">
+                <div class="location-title">
+                  <i class="fa-solid fa-location-dot"></i>
+                  Brasília, Distrito Federal
+                </div>
+                <div class="card-footer">
+                  <div class="sub-logo">
+                    <img src="remax-logo.png" alt="Logo" class="logo-img">
+                  </div>
+                  <a href="imoveis.html" class="more-btn">Mais sobre ...</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 4 -->
+          <article class="card" data-location="São Paulo, São Paulo" data-type="Casa" data-prefs="pets,garagem,metro,mobiliado">
+            <div class="card-image-container">
+              <img class="card-img" src="Casa-case4.jpg" alt="São Paulo, São Paulo">
+              <div class="card-badge">
+                <button class="heart-icon" aria-label="Favoritar"><i class="fa-regular fa-heart"></i></button>
+                <span class="rating">4.9 <i class="fa-solid fa-star"></i></span>
+              </div>
+              <div class="glass-overlay">
+                <div class="location-title">
+                  <i class="fa-solid fa-location-dot"></i>
+                  São Paulo, São Paulo
+                </div>
+                <div class="card-footer">
+                  <div class="sub-logo">
+                    <img src="Franciosi-circle-Icon.jpeg" alt="Logo" class="logo-img">
+                  </div>
+                  <a href="imoveis.html" class="more-btn">Mais sobre ...</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 5 -->
+          <article class="card" data-location="Barueri, São Paulo" data-type="Cobertura" data-prefs="mobiliado,garagem,varanda,ar,pets">
+            <div class="card-image-container">
+              <img class="card-img" src="Cobertura-case5.webp" alt="Barueri, São Paulo">
+              <div class="card-badge">
+                <button class="heart-icon" aria-label="Favoritar"><i class="fa-regular fa-heart"></i></button>
+                <span class="rating">4.4 <i class="fa-solid fa-star"></i></span>
+              </div>
+              <div class="glass-overlay">
+                <div class="location-title">
+                  <i class="fa-solid fa-location-dot"></i>
+                  Barueri, São Paulo
+                </div>
+                <div class="card-footer">
+                  <div class="sub-logo">
+                    <img src="remax-logo.png" alt="Logo" class="logo-img">
+                  </div>
+                  <a href="imoveis.html" class="more-btn">Mais sobre ...</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 6 -->
+          <article class="card" data-location="Guarulhos, São Paulo" data-type="Apartamento" data-prefs="pets,metro,garagem">
+            <div class="card-image-container">
+              <img class="card-img" src="Apartamento-case6.jpg" alt="Guarulhos, São Paulo">
+              <div class="card-badge">
+                <button class="heart-icon" aria-label="Favoritar"><i class="fa-regular fa-heart"></i></button>
+                <span class="rating">4.4 <i class="fa-solid fa-star"></i></span>
+              </div>
+              <div class="glass-overlay">
+                <div class="location-title">
+                  <i class="fa-solid fa-location-dot"></i>
+                  Guarulhos, São Paulo
+                </div>
+                <div class="card-footer">
+                  <div class="sub-logo">
+                    <img src="remax-logo.png" alt="Logo" class="logo-img">
+                  </div>
+                  <a href="imoveis.html" class="more-btn">Mais sobre ...</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- MENSAGEM QUANDO NENHUM IMÓVEL CORRESPONDER -->
+          <div class="no-results-card" id="noResultsMessage" style="display: none;">
+            <i class="fa-solid fa-house-circle-xmark" style="font-size: 2rem; color: #7c9674; margin-bottom: 10px;"></i>
+            <h3 style="margin: 0 0 6px;">Nenhum imóvel encontrado com esses filtros</h3>
+            <p style="margin: 0 0 16px; color: #5b695c; font-size: 0.9rem;">Tente remover uma das preferências ou selecionar outra localização.</p>
+            <button type="button" class="popover-apply-btn" id="emptyResetBtn">Mostrar todos os imóveis</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ==================== PÁGINA 2: IMOBILIÁRIAS ==================== -->
+    <div id="imobiliarias-page" class="tab-content">
+      <hr class="header-divider">
+
+      <section class="headline-section">
+        <span class="headline-badge">Parceiros Oficiais</span>
+        <h1 class="headline-title">
+          SUA BUSCA PELO IMÓVEL IDEAL COMEÇA<br>
+          ESCOLHENDO QUEM MELHOR TE ENTENDE!
+        </h1>
+      </section>
+
+      <main class="realty-grid">
+        <!-- CARD 1: FRANCIOSI -->
+        <article class="realty-card card-blue">
+          <div class="card-image-wrapper">
+            <img src="img_Franciosi_imobiliarias.jpg" alt="Franciosi Imóveis" class="card-cover-img">
+            <div class="card-image-overlay"></div>
+          </div>
+          <div class="logo-pill pill-blue">
+            <span class="agency-name text-franciosi">Franciosi <small>IMÓVEIS</small></span>
+          </div>
+          <div class="card-footer">
+            <a href="FranciosiInicial.html" class="saiba-mais-btn">
+              Saiba mais <i class="fa-solid fa-arrow-right-long icon-arrow"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- CARD 2: RE/MAX -->
+        <article class="realty-card card-yellow">
+          <div class="card-image-wrapper">
+            <img src="REMAX.png" alt="RE/MAX" class="card-cover-img">
+            <div class="card-image-overlay"></div>
+          </div>
+          <div class="logo-pill pill-yellow">
+            <span class="agency-name text-remax">RE/MAX</span>
+          </div>
+          <div class="card-footer">
+            <a href="#" class="saiba-mais-btn">
+              Saiba mais <i class="fa-solid fa-arrow-right-long icon-arrow"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- CARD 3: CBRE -->
+        <article class="realty-card card-green">
+          <div class="card-image-wrapper">
+            <img src="CBRE_img.jpg" alt="CBRE" class="card-cover-img">
+            <div class="card-image-overlay"></div>
+          </div>
+          <div class="logo-pill pill-green">
+            <span class="agency-name text-cbre">CBRE</span>
+          </div>
+          <div class="card-footer">
+            <a href="#" class="saiba-mais-btn">
+              Saiba mais <i class="fa-solid fa-arrow-right-long icon-arrow"></i>
+            </a>
+          </div>
+        </article>
+      </main>
+    </div>
+
+    <!-- ==================== PÁGINA 3: SOBRE A EMPRESA ROOMMATCH ==================== -->
+    <div id="sobre-page" class="tab-content">
+      <hr class="header-divider">
+
+      <div class="about-wrapper">
+        <div class="about-top-bar">
+          <button type="button" class="back-home-btn" id="backFromAboutBtn">
+            <i class="fa-solid fa-arrow-left"></i> Voltar para o início
+          </button>
+          <span class="headline-badge">Institucional • Sobre Nós</span>
+        </div>
+
+        <!-- HERO PRINCIPAL -->
+        <section class="liquid-panel about-hero">
+          <span class="about-hero-eyebrow">
+            <i class="fa-solid fa-house-heart"></i> Conectando pessoas ao lar ideal
+          </span>
+          <h1 class="about-hero-title">
+            Muito mais do que encontrar um imóvel.<br>É dar match com o seu estilo de vida.
+          </h1>
+          <p class="about-hero-desc">
+            A <strong>RoomMatch</strong> nasceu com o propósito de transformar a experiência de moradia no Brasil. Unimos tecnologia inteligente, curadoria rigorosa com as maiores imobiliárias do mercado e compatibilidade de perfil para ajudar você a comprar, alugar ou encontrar o colega de quarto (roommate) perfeito com total segurança e transparência.
+          </p>
+
+          <div class="about-stats-grid">
+            <div class="stat-pill-box">
+              <span class="stat-number">+12.500</span>
+              <span class="stat-label">Imóveis verificados</span>
+            </div>
+            <div class="stat-pill-box">
+              <span class="stat-number">98%</span>
+              <span class="stat-label">Índice de satisfação</span>
+            </div>
+            <div class="stat-pill-box">
+              <span class="stat-number">+45</span>
+              <span class="stat-label">Cidades atendidas</span>
+            </div>
+            <div class="stat-pill-box">
+              <span class="stat-number">100%</span>
+              <span class="stat-label">Parceiros certificados</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- MISSÃO, VISÃO E VALORES -->
+        <section class="mvv-grid">
+          <article class="liquid-panel mvv-card">
+            <div class="mvv-icon-circle">
+              <i class="fa-solid fa-compass"></i>
+            </div>
+            <h3>Nossa Missão</h3>
+            <p>
+              Simplificar a busca por moradia e convivência compartilhada, conectando pessoas, proprietários e imobiliárias de confiança em uma plataforma intuitiva, rápida e humana.
+            </p>
+          </article>
+
+          <article class="liquid-panel mvv-card">
+            <div class="mvv-icon-circle">
+              <i class="fa-solid fa-eye"></i>
+            </div>
+            <h3>Nossa Visão</h3>
+            <p>
+              Ser a plataforma referência em moradia inteligente e coliving na América Latina, reconhecida pela precisão na compatibilidade entre perfis e pela excelência no atendimento.
+            </p>
+          </article>
+
+          <article class="liquid-panel mvv-card">
+            <div class="mvv-icon-circle">
+              <i class="fa-solid fa-shield-heart"></i>
+            </div>
+            <h3>Nossos Valores</h3>
+            <p>
+              Transparência em cada etapa, segurança de dados, respeito à diversidade de estilos de vida, inovação contínua e parceria sólida com o mercado imobiliário.
+            </p>
+          </article>
+        </section>
+
+        <!-- DIFERENCIAIS E CONTATO INSTITUCIONAL -->
+        <section class="about-bottom-grid">
+          <div class="liquid-panel about-detail-card">
+            <h3>Por que escolher a RoomMatch?</h3>
+            <div class="pillar-list">
+              <div class="pillar-item">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <div>
+                  <strong>Busca Inteligente por Preferências</strong>
+                  <span>Filtre imóveis exatamente pelo que importa na sua rotina: localização, mobilidade, pets, mobília e estrutura.</span>
+                </div>
+              </div>
+
+              <div class="pillar-item">
+                <i class="fa-solid fa-building-circle-check"></i>
+                <div>
+                  <strong>Aliança com Grandes Imobiliárias</strong>
+                  <span>Trabalhamos lado a lado com marcas consolidadas como Franciosi, RE/MAX e CBRE para garantir contratos seguros.</span>
+                </div>
+              </div>
+
+              <div class="pillar-item">
+                <i class="fa-solid fa-comments"></i>
+                <div>
+                  <strong>Contato Direto e Sem Burocracia</strong>
+                  <span>Converse diretamente com anfitriões e consultores em tempo real para tirar dúvidas e agendar visitas.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="liquid-panel about-detail-card">
+            <h3>Fale com a RoomMatch</h3>
+            <div class="contact-info-list">
+              <div class="contact-info-row">
+                <span class="c-icon"><i class="fa-solid fa-location-dot"></i></span>
+                <span>Av. Paulista, 1374 — Bela Vista, São Paulo - SP</span>
+              </div>
+              <div class="contact-info-row">
+                <span class="c-icon"><i class="fa-solid fa-envelope"></i></span>
+                <span>contato@roommatch.com.br</span>
+              </div>
+              <div class="contact-info-row">
+                <span class="c-icon"><i class="fa-brands fa-whatsapp"></i></span>
+                <span>(11) 4002-8922 • Atendimento Seg a Sáb</span>
+              </div>
+              <div class="contact-info-row">
+                <span class="c-icon"><i class="fa-solid fa-file-shield"></i></span>
+                <span>CNPJ: 48.912.340/0001-75 • CRECI-SP J-39410</span>
+              </div>
+            </div>
+
+            <!-- BOTÕES DE REDES SOCIAIS -->
+            <div class="about-social-strip">
+              <button type="button" class="about-social-btn" data-social-modal="instagram" title="Abrir Instagram RoomMatch">
+                <i class="fa-brands fa-instagram"></i>
+              </button>
+              <button type="button" class="about-social-btn" data-social-modal="facebook" title="Abrir Facebook RoomMatch">
+                <i class="fa-brands fa-facebook-f"></i>
+              </button>
+              <button type="button" class="about-social-btn" data-social-modal="linkedin" title="Abrir LinkedIn RoomMatch">
+                <i class="fa-brands fa-linkedin-in"></i>
+              </button>
+              <button type="button" class="about-social-btn" data-social-modal="youtube" title="Abrir YouTube RoomMatch">
+                <i class="fa-brands fa-youtube"></i>
+              </button>
+            </div>
+
+            <button type="button" class="explore-cta-btn" id="explorePropertiesBtn">
+              <i class="fa-solid fa-magnifying-glass"></i> Explorar Imóveis Disponíveis
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ==================== PÁGINA 4: PERFIL DO USUÁRIO ==================== -->
+    <div id="perfil-page" class="tab-content">
+      <hr class="header-divider">
+
+      <div class="profile-wrapper">
+        <div class="profile-top-bar">
+          <button type="button" class="back-home-btn" id="backFromProfileBtn">
+            <i class="fa-solid fa-arrow-left"></i> Voltar para o início
+          </button>
+          <span class="headline-badge">Minha Conta RoomMatch</span>
+        </div>
+
+        <div class="profile-grid">
+          <!-- COLUNA ESQUERDA: FOTO E RESUMO -->
+          <aside class="profile-card profile-summary">
+            <div class="avatar-upload-box">
+              <div class="avatar-preview">
+                <i class="fa-solid fa-user" id="profileAvatarIcon"></i>
+                <img id="profileAvatarImg" src="" alt="Foto de Perfil">
+              </div>
+              <label for="avatarFileInput" class="change-photo-btn" title="Alterar foto de perfil">
+                <i class="fa-solid fa-camera"></i>
+              </label>
+              <input type="file" id="avatarFileInput" accept="image/*" hidden>
+            </div>
+
+            <h2 class="profile-display-name" id="displayUserName">Usuário RoomMatch</h2>
+            <p class="profile-display-email" id="displayUserEmail">usuario@roommatch.com.br</p>
+
+            <div class="profile-badge-status">
+              <i class="fa-solid fa-circle-check"></i> Cadastro Verificado
+            </div>
+
+            <div>
+              <button type="button" class="remove-photo-link" id="removePhotoBtn" style="display: none;">
+                Remover foto atual
+              </button>
+            </div>
+          </aside>
+
+          <!-- COLUNA DIREITA: FORMULÁRIO DE EDIÇÃO -->
+          <section class="profile-card">
+            <form id="profileForm">
+              <h3 class="profile-section-title">Dados Pessoais</h3>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="inputName">Nome Completo</label>
+                  <div class="input-wrapper">
+                    <input type="text" id="inputName" value="Usuário RoomMatch" required>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="inputEmail">E-mail</label>
+                  <div class="input-wrapper">
+                    <input type="email" id="inputEmail" value="usuario@roommatch.com.br" required>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="inputPhone">Telefone / WhatsApp</label>
+                  <div class="input-wrapper">
+                    <input type="tel" id="inputPhone" placeholder="(11) 99999-9999" value="(11) 98765-4321">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="inputCity">Cidade de Interesse</label>
+                  <div class="input-wrapper">
+                    <input type="text" id="inputCity" placeholder="Ex: São Paulo, SP" value="São Paulo, SP">
+                  </div>
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="inputGoal">Objetivo no RoomMatch</label>
+                  <div class="input-wrapper">
+                    <select id="inputGoal">
+                      <option value="comprar">Comprar um imóvel</option>
+                      <option value="alugar" selected>Alugar um imóvel</option>
+                      <option value="dividir">Encontrar colega de quarto (Roommate)</option>
+                      <option value="anunciar">Anunciar meu imóvel</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <h3 class="profile-section-title">Segurança e Senha</h3>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="inputNewPassword">Nova Senha</label>
+                  <div class="input-wrapper">
+                    <input type="password" id="inputNewPassword" placeholder="Deixe em branco para manter">
+                    <button type="button" class="toggle-pass-btn" data-target="inputNewPassword" aria-label="Mostrar senha">
+                      <i class="fa-regular fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="inputConfirmPassword">Confirmar Nova Senha</label>
+                  <div class="input-wrapper">
+                    <input type="password" id="inputConfirmPassword" placeholder="Repita a nova senha">
+                    <button type="button" class="toggle-pass-btn" data-target="inputConfirmPassword" aria-label="Mostrar senha">
+                      <i class="fa-regular fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="profile-actions">
+                <button type="submit" class="btn-save-profile">
+                  <i class="fa-solid fa-floppy-disk"></i> Salvar Alterações
+                </button>
+              </div>
+
+              <div id="profileToast" class="toast-feedback"></div>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== RODAPÉ INSTITUCIONAL (FULL-WIDTH) ==================== -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-columns">
+          <!-- COLUNA 1: ROOMMATCH -->
+          <div class="footer-col">
+            <h4>RoomMatch</h4>
+            <ul class="footer-links">
+              <li><button type="button" data-footer-nav="sobre-page">Site Institucional</button></li>
+              <li><button type="button" data-footer-nav="sobre-page">Fale Conosco</button></li>
+              <li><button type="button" data-footer-nav="perfil-page">Conta e Segurança</button></li>
+              <li><button type="button" data-footer-nav="sobre-page">Carreiras</button></li>
+              <li><button type="button" data-footer-nav="imobiliarias-page">Imobiliárias Parceiras</button></li>
+            </ul>
+          </div>
+
+          <!-- COLUNA 2: DESCUBRA -->
+          <div class="footer-col">
+            <h4>Descubra</h4>
+            <ul class="footer-links">
+              <li><button type="button" data-footer-nav="perfil-page">Cadastre seu Imóvel</button></li>
+              <li><button type="button" data-footer-nav="home-page">Encontrar Roommate</button></li>
+              <li><button type="button" data-footer-nav="home-page">Aluguel e Compra</button></li>
+              <li><button type="button" data-footer-nav="sobre-page">Blog RoomMatch</button></li>
+            </ul>
+          </div>
+
+          <!-- COLUNA 3: SOCIAL -->
+          <div class="footer-col">
+            <h4>Social</h4>
+            <div class="footer-social-icons">
+              <button type="button" class="social-circle-link" data-social-modal="instagram" aria-label="Instagram" title="Instagram RoomMatch">
+                <i class="fa-brands fa-instagram"></i>
+              </button>
+              <button type="button" class="social-circle-link" data-social-modal="facebook" aria-label="Facebook" title="Facebook RoomMatch">
+                <i class="fa-brands fa-facebook-f"></i>
+              </button>
+              <button type="button" class="social-circle-link" data-social-modal="linkedin" aria-label="LinkedIn" title="LinkedIn RoomMatch">
+                <i class="fa-brands fa-linkedin-in"></i>
+              </button>
+              <button type="button" class="social-circle-link" data-social-modal="youtube" aria-label="YouTube" title="YouTube RoomMatch">
+                <i class="fa-brands fa-youtube"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <hr class="footer-divider">
+
+        <div class="footer-bottom">
+          <div class="footer-legal-info">
+            <img src="Roomatch-logo.png" alt="RoomMatch" class="footer-mini-logo">
+            <p>
+              &copy; Copyright 2026 - RoomMatch - Todos os direitos reservados RoomMatch Plataforma Imobiliária S.A.<br>
+              CNPJ 48.912.340/0001-75 / Av. Paulista, nº 1374, Bela Vista, São Paulo/SP - CEP 01310-100
+            </p>
+          </div>
+
+          <div class="footer-policy-links">
+            <a href="#termos" data-footer-nav="sobre-page">Termos e condições de uso</a>
+            <a href="#conduta" data-footer-nav="sobre-page">Código de conduta</a>
+            <a href="#privacidade" data-footer-nav="sobre-page">Privacidade</a>
+            <a href="#seguranca" data-footer-nav="sobre-page">Dicas de segurança</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ==================== BALÃO CENTRAL LIQUID GLASS: REDES SOCIAIS ==================== -->
+  <div class="social-modal-backdrop" id="socialModalBackdrop" aria-hidden="true">
+    <div class="social-liquid-bubble" id="socialLiquidBubble" role="dialog" aria-modal="true">
+      <div class="social-bubble-topbar">
+        <span class="social-browser-pill" id="socialUrlBadge">
+          <i class="fa-solid fa-lock" style="color: #6b8862;"></i>
+          <span id="socialUrlText">instagram.com/roommatch.oficial</span>
+        </span>
+        <button type="button" class="social-bubble-close" id="closeSocialModalBtn" aria-label="Fechar janela">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Conteúdo fiel da rede social escolhida -->
+      <div class="social-screen-frame" id="socialScreenContainer"></div>
+
+      <div class="social-external-footer">
+        <a href="#" target="_blank" rel="noopener noreferrer" class="social-open-real-btn" id="socialExternalLink">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          <span id="socialExternalLabel">Abrir site oficial</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT NAVEGAÇÃO, FILTROS DA BARRA DE BUSCA, MODAL SOCIAL FIEL E PERFIL -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const navToggle = document.getElementById('navToggle');
+      const toggleBtns = document.querySelectorAll('.toggle-btn');
+      const indicator = document.querySelector('.nav-indicator');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const openProfileBtn = document.getElementById('openProfileBtn');
+      const backFromProfileBtn = document.getElementById('backFromProfileBtn');
+      const logoAboutBtn = document.getElementById('logoAboutBtn');
+      const backFromAboutBtn = document.getElementById('backFromAboutBtn');
+      const explorePropertiesBtn = document.getElementById('explorePropertiesBtn');
+
+      function updateIndicator(activeBtn) {
+        if (!activeBtn) {
+          indicator.style.opacity = '0';
+          return;
+        }
+        indicator.style.opacity = '1';
+        indicator.style.width = `${activeBtn.offsetWidth}px`;
+        indicator.style.left = `${activeBtn.offsetLeft}px`;
+      }
+
+      function switchTab(targetTabId) {
+        const isProfile = targetTabId === 'perfil-page';
+        const isAbout = targetTabId === 'sobre-page';
+
+        navToggle.classList.toggle('is-hidden', isProfile || isAbout);
+
+        tabContents.forEach(content => {
+          content.classList.toggle('active-tab', content.id === targetTabId);
+        });
+
+        let matchedNavBtn = null;
+        toggleBtns.forEach(btn => {
+          const isMatch = btn.getAttribute('data-tab') === targetTabId;
+          btn.classList.toggle('active', isMatch);
+          if (isMatch) matchedNavBtn = btn;
+        });
+
+        openProfileBtn.classList.toggle('active-profile', isProfile);
+        logoAboutBtn.classList.toggle('active-about', isAbout);
+
+        if (!isProfile && !isAbout) {
+          updateIndicator(matchedNavBtn);
+        }
+      }
+
+      const initialActive = document.querySelector('.toggle-btn.active');
+      if (initialActive) updateIndicator(initialActive);
+
+      toggleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          switchTab(btn.getAttribute('data-tab'));
+        });
+      });
+
+      document.querySelectorAll('[data-footer-nav]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = el.getAttribute('data-footer-nav');
+          switchTab(target);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+
+      logoAboutBtn.addEventListener('click', () => {
+        switchTab('sobre-page');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      backFromAboutBtn.addEventListener('click', () => {
+        switchTab('home-page');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      explorePropertiesBtn.addEventListener('click', () => {
+        switchTab('home-page');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      openProfileBtn.addEventListener('click', () => {
+        switchTab('perfil-page');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      backFromProfileBtn.addEventListener('click', () => switchTab('home-page'));
+
+      window.addEventListener('resize', () => {
+        if (!navToggle.classList.contains('is-hidden')) {
+          const currentActive = document.querySelector('.toggle-btn.active');
+          updateIndicator(currentActive);
+        }
+      });
+
+      // ==================== BALÃO LIQUID GLASS: LAYOUTS FIÉIS DAS REDES SOCIAIS ====================
+      const socialModalBackdrop = document.getElementById('socialModalBackdrop');
+      const socialLiquidBubble = document.getElementById('socialLiquidBubble');
+      const closeSocialModalBtn = document.getElementById('closeSocialModalBtn');
+      const socialScreenContainer = document.getElementById('socialScreenContainer');
+      const socialUrlText = document.getElementById('socialUrlText');
+      const socialExternalLink = document.getElementById('socialExternalLink');
+      const socialExternalLabel = document.getElementById('socialExternalLabel');
+
+      const socialTemplates = {
+        instagram: {
+          wide: false,
+          urlDisplay: 'instagram.com/roommatch.oficial',
+          externalUrl: 'https://www.instagram.com',
+          externalLabel: 'Abrir no Instagram',
+          html: `
+            <div class="ig-header">
+              <span class="ig-username">roommatch.oficial <i class="fa-solid fa-circle-check" style="color:#0095f6;font-size:0.82rem;"></i></span>
+              <div class="ig-header-icons">
+                <i class="fa-regular fa-square-plus"></i>
+                <i class="fa-solid fa-bars"></i>
+              </div>
+            </div>
+
+            <div class="ig-profile-row">
+              <div class="ig-avatar-ring">
+                <div class="ig-avatar-inner">
+                  <img src="Roomatch-logo.png" alt="RoomMatch">
+                </div>
+              </div>
+              <div class="ig-stats">
+                <div class="ig-stat"><strong>75</strong><span>Posts</span></div>
+                <div class="ig-stat"><strong>237k</strong><span>Followers</span></div>
+                <div class="ig-stat"><strong>240</strong><span>Following</span></div>
+              </div>
+            </div>
+
+            <div class="ig-bio">
+              <span class="ig-handle-pill">@roommatch.oficial</span><br>
+              <strong>RoomMatch Brasil</strong> • Plataforma Imobiliária & Coliving<br>
+              Encontre o imóvel ou roommate ideal com segurança e praticidade.
+            </div>
+
+            <div class="ig-action-btns">
+              <button type="button" class="ig-btn ig-btn-primary" id="igFollowToggle">Seguir</button>
+              <button type="button" class="ig-btn ig-btn-secondary">Enviar mensagem</button>
+            </div>
+
+            <div class="ig-highlights">
+              <div class="ig-highlight-item">
+                <div class="ig-highlight-circle"><img src="Casa-case1.jpg" alt="Sorocaba"></div>
+                <span>Sorocaba</span>
+              </div>
+              <div class="ig-highlight-item">
+                <div class="ig-highlight-circle"><img src="Apartamento-case2.jpg" alt="Campinas"></div>
+                <span>Campinas</span>
+              </div>
+              <div class="ig-highlight-item">
+                <div class="ig-highlight-circle"><img src="Casa-case4.jpg" alt="São Paulo"></div>
+                <span>São Paulo</span>
+              </div>
+              <div class="ig-highlight-item">
+                <div class="ig-highlight-circle"><img src="Cobertura-case5.webp" alt="Barueri"></div>
+                <span>Barueri</span>
+              </div>
+            </div>
+
+            <div class="ig-tabs">
+              <div class="ig-tab active"><i class="fa-solid fa-table-cells"></i></div>
+              <div class="ig-tab"><i class="fa-solid fa-clapperboard"></i></div>
+              <div class="ig-tab"><i class="fa-regular fa-id-badge"></i></div>
+            </div>
+
+            <div class="ig-grid">
+              <div class="ig-grid-cell"><img src="Casa-case1.jpg" alt="Post 1"></div>
+              <div class="ig-grid-cell"><img src="Apartamento-case2.jpg" alt="Post 2"><i class="fa-solid fa-clone ig-grid-badge"></i></div>
+              <div class="ig-grid-cell"><img src="Apartamento-case3.jpg" alt="Post 3"></div>
+              <div class="ig-grid-cell"><img src="Casa-case4.jpg" alt="Post 4"><i class="fa-solid fa-clone ig-grid-badge"></i></div>
+              <div class="ig-grid-cell"><img src="Cobertura-case5.webp" alt="Post 5"><i class="fa-solid fa-clapperboard ig-grid-badge"></i></div>
+              <div class="ig-grid-cell"><img src="Apartamento-case6.jpg" alt="Post 6"><i class="fa-solid fa-clapperboard ig-grid-badge"></i></div>
+            </div>
+          `
+        },
+
+        facebook: {
+          wide: false,
+          urlDisplay: 'facebook.com/roommatchbrasil',
+          externalUrl: 'https://www.facebook.com',
+          externalLabel: 'Abrir no Facebook',
+          html: `
+            <div class="fb-top-bar">
+              <span><i class="fa-brands fa-facebook"></i> &nbsp;RoomMatch Brasil</span>
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+
+            <div class="fb-cover">
+              <img src="Casa-case4.jpg" alt="Capa Facebook RoomMatch">
+            </div>
+
+            <div class="fb-profile-section">
+              <div class="fb-avatar">
+                <img src="Roomatch-logo.png" alt="RoomMatch">
+              </div>
+
+              <h3 class="fb-name">RoomMatch Brasil <i class="fa-solid fa-circle-check" style="color:#1877f2;font-size:0.88rem;"></i></h3>
+              <div class="fb-friends"><strong>32,9 mil</strong> seguidores • <strong>249</strong> parceiros</div>
+
+              <div class="fb-actions">
+                <button type="button" class="fb-btn-follow" id="fbFollowToggle">
+                  <i class="fa-solid fa-user-plus"></i> Seguir
+                </button>
+                <button type="button" class="fb-btn-msg">
+                  <i class="fa-brands fa-facebook-messenger"></i> Mensagem
+                </button>
+              </div>
+
+              <div class="fb-subtabs">
+                <span class="fb-pill-tab active">Posts</span>
+                <span class="fb-pill-tab">Fotos</span>
+                <span class="fb-pill-tab">Sobre</span>
+              </div>
+
+              <div class="fb-pinned-post">
+                <div class="fb-pinned-label"><i class="fa-solid fa-thumbtack"></i> Post fixado</div>
+                <div class="fb-post-header">
+                  <div class="fb-post-mini-avatar"><img src="Roomatch-logo.png" alt="Avatar"></div>
+                  <div>
+                    <div style="font-size:0.8rem;font-weight:700;">RoomMatch Brasil</div>
+                    <div style="font-size:0.68rem;color:#65676b;">Publicado oficialmente • <i class="fa-solid fa-earth-americas"></i></div>
+                  </div>
+                </div>
+                <p style="margin:0 0 8px;font-size:0.78rem;color:#1c1e21;line-height:1.45;">
+                  Bem-vindo à comunidade oficial RoomMatch! Conectamos você às melhores imobiliárias e colegas de quarto verificados em todo o Brasil.
+                </p>
+                <img src="Apartamento-case2.jpg" alt="Destaque" style="width:100%;height:110px;object-fit:cover;border-radius:8px;">
+              </div>
+            </div>
+          `
+        },
+
+        linkedin: {
+          wide: true,
+          urlDisplay: 'linkedin.com/company/roommatch-brasil',
+          externalUrl: 'https://www.linkedin.com',
+          externalLabel: 'Abrir no LinkedIn',
+          html: `
+            <div class="li-banner"></div>
+            <div class="li-body">
+              <div class="li-avatar">
+                <img src="Roomatch-logo.png" alt="RoomMatch">
+              </div>
+
+              <div class="li-title-row">
+                <h3>RoomMatch Plataforma Imobiliária</h3>
+                <span class="li-verify-pill"><i class="fa-solid fa-shield-halved"></i> Empresa verificada</span>
+              </div>
+
+              <p class="li-headline">
+                Tecnologia imobiliária (PropTech) | Conectando pessoas ao lar ideal e coliving inteligente em parceria com Franciosi, RE/MAX e CBRE
+              </p>
+              <div class="li-hashtags">#proptech #imobiliaria #coliving #roommatch #moradia</div>
+              <div class="li-location">
+                São Paulo, São Paulo, Brasil • <a href="#contato" onclick="return false;">Informações de contato</a>
+              </div>
+
+              <div class="li-connections">19.480 seguidores • 500+ conexões corporativas</div>
+
+              <div class="li-buttons-row">
+                <button type="button" class="li-btn-primary" id="liFollowToggle">+ Seguir</button>
+                <button type="button" class="li-btn-outline">Visitar site institucional</button>
+                <button type="button" class="li-btn-ghost">Mais</button>
+              </div>
+            </div>
+          `
+        },
+
+        youtube: {
+          wide: true,
+          urlDisplay: 'youtube.com/@RoomMatchTV',
+          externalUrl: 'https://www.youtube.com',
+          externalLabel: 'Abrir no YouTube',
+          html: `
+            <div class="yt-topbar">
+              <div class="yt-brand"><i class="fa-brands fa-youtube"></i> YouTube <sup style="font-size:0.55rem;color:#606060;">BR</sup></div>
+              <div class="yt-search-mock">
+                <span>Pesquisar</span>
+                <button type="button"><i class="fa-solid fa-magnifying-glass"></i></button>
+              </div>
+            </div>
+
+            <div class="yt-banner">ROOMMATCH TV</div>
+
+            <div class="yt-channel-header">
+              <div class="yt-channel-left">
+                <div class="yt-avatar"><img src="Roomatch-logo.png" alt="RoomMatch TV"></div>
+                <div class="yt-channel-info">
+                  <h4>RoomMatch Brasil <i class="fa-solid fa-circle-check" style="color:#606060;font-size:0.78rem;"></i></h4>
+                  <span>64,5 mil inscritos</span>
+                </div>
+              </div>
+              <button type="button" class="yt-subscribe-btn" id="ytSubscribeToggle">INSCREVER-SE</button>
+            </div>
+
+            <div class="yt-nav-tabs">
+              <span class="active">INÍCIO</span>
+              <span>VÍDEOS</span>
+              <span>PLAYLISTS</span>
+              <span>CANAIS</span>
+              <span>DISCUSSÃO</span>
+              <span>SOBRE</span>
+            </div>
+
+            <div class="yt-videos-section">
+              <div class="yt-section-label">
+                <span>Envios</span>
+                <span style="color:#606060;font-size:0.72rem;"><i class="fa-solid fa-play"></i> REPRODUZIR TODOS</span>
+              </div>
+              <div class="yt-videos-row">
+                <div class="yt-video-card">
+                  <div class="yt-thumb">
+                    <img src="Cobertura-case5.webp" alt="Vídeo 1">
+                    <span class="yt-duration">4:22</span>
+                  </div>
+                  <div class="yt-video-title">Tour 4K: Cobertura Duplex em Barueri</div>
+                </div>
+                <div class="yt-video-card">
+                  <div class="yt-thumb">
+                    <img src="Casa-case1.jpg" alt="Vídeo 2">
+                    <span class="yt-duration">3:29</span>
+                  </div>
+                  <div class="yt-video-title">Como encontrar o Roommate ideal</div>
+                </div>
+                <div class="yt-video-card">
+                  <div class="yt-thumb">
+                    <img src="Apartamento-case2.jpg" alt="Vídeo 3">
+                    <span class="yt-duration">6:15</span>
+                  </div>
+                  <div class="yt-video-title">Apê Mobiliado em Campinas: Vale a pena?</div>
+                </div>
+              </div>
+            </div>
+          `
+        }
+      };
+
+      function openSocialBubble(networkKey) {
+        const config = socialTemplates[networkKey];
+        if (!config) return;
+
+        socialLiquidBubble.classList.toggle('is-wide', config.wide);
+        socialUrlText.textContent = config.urlDisplay;
+        socialScreenContainer.innerHTML = config.html;
+        socialExternalLink.href = config.externalUrl;
+        socialExternalLabel.textContent = config.externalLabel;
+        socialLiquidBubble.scrollTop = 0;
+
+        // Interatividade interna nos botões de Seguir / Inscrever-se
+        const igFollow = document.getElementById('igFollowToggle');
+        if (igFollow) {
+          igFollow.addEventListener('click', () => {
+            igFollow.classList.toggle('following');
+            igFollow.textContent = igFollow.classList.contains('following') ? 'Seguindo ✓' : 'Seguir';
+          });
+        }
+
+        const fbFollow = document.getElementById('fbFollowToggle');
+        if (fbFollow) {
+          fbFollow.addEventListener('click', () => {
+            const active = fbFollow.dataset.active === '1';
+            fbFollow.dataset.active = active ? '0' : '1';
+            fbFollow.innerHTML = active
+              ? '<i class="fa-solid fa-user-plus"></i> Seguir'
+              : '<i class="fa-solid fa-check"></i> Seguindo';
+          });
+        }
+
+        const liFollow = document.getElementById('liFollowToggle');
+        if (liFollow) {
+          liFollow.addEventListener('click', () => {
+            const active = liFollow.dataset.active === '1';
+            liFollow.dataset.active = active ? '0' : '1';
+            liFollow.textContent = active ? '+ Seguir' : '✓ Seguindo';
+          });
+        }
+
+        const ytSub = document.getElementById('ytSubscribeToggle');
+        if (ytSub) {
+          ytSub.addEventListener('click', () => {
+            ytSub.classList.toggle('subscribed');
+            ytSub.textContent = ytSub.classList.contains('subscribed') ? 'INSCRITO ✓' : 'INSCREVER-SE';
+          });
+        }
+
+        socialModalBackdrop.classList.add('is-open');
+        socialModalBackdrop.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeSocialBubble() {
+        socialModalBackdrop.classList.remove('is-open');
+        socialModalBackdrop.setAttribute('aria-hidden', 'true');
+      }
+
+      document.querySelectorAll('[data-social-modal]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          openSocialBubble(btn.getAttribute('data-social-modal'));
+        });
+      });
+
+      closeSocialModalBtn.addEventListener('click', closeSocialBubble);
+
+      socialModalBackdrop.addEventListener('click', (e) => {
+        if (e.target === socialModalBackdrop) {
+          closeSocialBubble();
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && socialModalBackdrop.classList.contains('is-open')) {
+          closeSocialBubble();
+        }
+      });
+
+      // ==================== BARRA DE BUSCA & TÓPICOS INTERATIVOS ====================
+      const searchContainer = document.getElementById('searchContainer');
+      const searchBar = document.getElementById('searchBar');
+      const filterPills = document.querySelectorAll('.search-pill');
+      const popovers = document.querySelectorAll('.filter-popover');
+      const searchActionBtn = document.getElementById('searchActionBtn');
+      const keywordSearchInput = document.getElementById('keywordSearchInput');
+
+      const pillLocalizacao = document.getElementById('pillLocalizacao');
+      const pillTipo = document.getElementById('pillTipo');
+      const pillPreferencias = document.getElementById('pillPreferencias');
+      const labelLocalizacao = document.getElementById('labelLocalizacao');
+      const labelTipo = document.getElementById('labelTipo');
+      const prefCountBadge = document.getElementById('prefCountBadge');
+
+      const propertyCards = document.querySelectorAll('#cardsGrid .card');
+      const noResultsMessage = document.getElementById('noResultsMessage');
+      const activeFiltersStatus = document.getElementById('activeFiltersStatus');
+      const filterSummaryText = document.getElementById('filterSummaryText');
+      const resetAllFiltersBtn = document.getElementById('resetAllFiltersBtn');
+      const emptyResetBtn = document.getElementById('emptyResetBtn');
+
+      const filterState = {
+        location: '',
+        type: '',
+        preferences: [],
+        keyword: ''
+      };
+
+      function closeAllPopovers() {
+        popovers.forEach(p => p.classList.remove('active'));
+        filterPills.forEach(pill => pill.classList.remove('is-open'));
+      }
+
+      filterPills.forEach(pill => {
+        pill.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const targetFilter = pill.getAttribute('data-filter');
+          const targetPopover = document.getElementById(`popover-${targetFilter}`);
+          const wasOpen = targetPopover.classList.contains('active');
+
+          closeAllPopovers();
+
+          if (!wasOpen) {
+            targetPopover.classList.add('active');
+            pill.classList.add('is-open');
+          }
+        });
+      });
+
+      popovers.forEach(popover => {
+        popover.addEventListener('click', (e) => e.stopPropagation());
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!searchContainer.contains(e.target)) {
+          closeAllPopovers();
+        }
+      });
+
+      document.querySelectorAll('#chipsLocalizacao .topic-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('#chipsLocalizacao .topic-chip').forEach(c => c.classList.remove('selected'));
+          chip.classList.add('selected');
+          filterState.location = chip.getAttribute('data-value');
+
+          labelLocalizacao.textContent = filterState.location ? chip.textContent.trim() : 'Localização';
+          pillLocalizacao.classList.toggle('has-value', Boolean(filterState.location));
+          document.getElementById('hintLocalizacao').textContent = filterState.location
+            ? `Região: ${filterState.location}`
+            : 'Mostrando todas as regiões';
+
+          applyPropertyFilters();
+        });
+      });
+
+      document.querySelectorAll('#chipsTipo .topic-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('#chipsTipo .topic-chip').forEach(c => c.classList.remove('selected'));
+          chip.classList.add('selected');
+          filterState.type = chip.getAttribute('data-value');
+
+          labelTipo.textContent = filterState.type ? filterState.type : 'Tipo';
+          pillTipo.classList.toggle('has-value', Boolean(filterState.type));
+          document.getElementById('hintTipo').textContent = filterState.type
+            ? `Categoria: ${filterState.type}`
+            : 'Selecione a categoria desejada';
+
+          applyPropertyFilters();
+        });
+      });
+
+      document.querySelectorAll('#chipsPreferencias .topic-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          chip.classList.toggle('selected');
+          const val = chip.getAttribute('data-value');
+
+          if (chip.classList.contains('selected')) {
+            if (!filterState.preferences.includes(val)) filterState.preferences.push(val);
+          } else {
+            filterState.preferences = filterState.preferences.filter(item => item !== val);
+          }
+
+          const count = filterState.preferences.length;
+          prefCountBadge.textContent = count;
+          prefCountBadge.style.display = count > 0 ? 'inline-block' : 'none';
+          pillPreferencias.classList.toggle('has-value', count > 0);
+          document.getElementById('hintPreferencias').textContent = count > 0
+            ? `${count} tópico(s) selecionado(s)`
+            : 'Selecione um ou mais tópicos';
+
+          applyPropertyFilters();
+        });
+      });
+
+      document.querySelectorAll('.popover-clear-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const group = btn.getAttribute('data-clear');
+          if (group === 'localizacao') {
+            filterState.location = '';
+            labelLocalizacao.textContent = 'Localização';
+            pillLocalizacao.classList.remove('has-value');
+            document.querySelectorAll('#chipsLocalizacao .topic-chip').forEach((c, i) => c.classList.toggle('selected', i === 0));
+          } else if (group === 'tipo') {
+            filterState.type = '';
+            labelTipo.textContent = 'Tipo';
+            pillTipo.classList.remove('has-value');
+            document.querySelectorAll('#chipsTipo .topic-chip').forEach((c, i) => c.classList.toggle('selected', i === 0));
+          } else if (group === 'preferencias') {
+            filterState.preferences = [];
+            prefCountBadge.style.display = 'none';
+            pillPreferencias.classList.remove('has-value');
+            document.querySelectorAll('#chipsPreferencias .topic-chip').forEach(c => c.classList.remove('selected'));
+          }
+          applyPropertyFilters();
+        });
+      });
+
+      document.querySelectorAll('.popover-apply-btn[data-apply]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          applyPropertyFilters();
+          closeAllPopovers();
+        });
+      });
+
+      searchActionBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllPopovers();
+
+        if (!searchBar.classList.contains('search-expanded')) {
+          searchBar.classList.add('search-expanded');
+          setTimeout(() => keywordSearchInput.focus(), 120);
+        } else {
+          filterState.keyword = keywordSearchInput.value.trim().toLowerCase();
+          applyPropertyFilters();
+          if (!filterState.keyword) {
+            searchBar.classList.remove('search-expanded');
+          }
+        }
+      });
+
+      keywordSearchInput.addEventListener('input', () => {
+        filterState.keyword = keywordSearchInput.value.trim().toLowerCase();
+        applyPropertyFilters();
+      });
+
+      keywordSearchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          applyPropertyFilters();
+        }
+      });
+
+      function applyPropertyFilters() {
+        let visibleCount = 0;
+
+        propertyCards.forEach(card => {
+          const cardLoc = (card.getAttribute('data-location') || '').toLowerCase();
+          const cardType = (card.getAttribute('data-type') || '').toLowerCase();
+          const cardPrefs = (card.getAttribute('data-prefs') || '').split(',');
+
+          const matchLocation = !filterState.location || cardLoc === filterState.location.toLowerCase();
+          const matchType = !filterState.type || cardType === filterState.type.toLowerCase();
+          const matchPrefs = filterState.preferences.every(pref => cardPrefs.includes(pref));
+          const matchKeyword = !filterState.keyword ||
+            cardLoc.includes(filterState.keyword) ||
+            cardType.includes(filterState.keyword) ||
+            cardPrefs.some(p => p.includes(filterState.keyword));
+
+          const isVisible = matchLocation && matchType && matchPrefs && matchKeyword;
+          card.style.display = isVisible ? '' : 'none';
+          if (isVisible) visibleCount++;
+        });
+
+        noResultsMessage.style.display = visibleCount === 0 ? 'block' : 'none';
+
+        const hasAnyFilter = Boolean(
+          filterState.location ||
+          filterState.type ||
+          filterState.preferences.length > 0 ||
+          filterState.keyword
+        );
+
+        activeFiltersStatus.classList.toggle('visible', hasAnyFilter);
+        filterSummaryText.textContent = visibleCount === 1
+          ? '1 imóvel encontrado para sua busca'
+          : `${visibleCount} imóveis encontrados para sua busca`;
+      }
+
+      function resetAllFilters() {
+        filterState.location = '';
+        filterState.type = '';
+        filterState.preferences = [];
+        filterState.keyword = '';
+
+        labelLocalizacao.textContent = 'Localização';
+        labelTipo.textContent = 'Tipo';
+        prefCountBadge.style.display = 'none';
+        keywordSearchInput.value = '';
+        searchBar.classList.remove('search-expanded');
+
+        pillLocalizacao.classList.remove('has-value');
+        pillTipo.classList.remove('has-value');
+        pillPreferencias.classList.remove('has-value');
+
+        document.querySelectorAll('#chipsLocalizacao .topic-chip').forEach((c, i) => c.classList.toggle('selected', i === 0));
+        document.querySelectorAll('#chipsTipo .topic-chip').forEach((c, i) => c.classList.toggle('selected', i === 0));
+        document.querySelectorAll('#chipsPreferencias .topic-chip').forEach(c => c.classList.remove('selected'));
+
+        applyPropertyFilters();
+      }
+
+      resetAllFiltersBtn.addEventListener('click', resetAllFilters);
+      emptyResetBtn.addEventListener('click', resetAllFilters);
+
+      const heartButtons = document.querySelectorAll('.heart-icon');
+      heartButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('active');
+          const icon = btn.querySelector('i');
+          icon.classList.toggle('fa-regular', !btn.classList.contains('active'));
+          icon.classList.toggle('fa-solid', btn.classList.contains('active'));
+        });
+      });
+
+      // ==================== LÓGICA DA TELA DE PERFIL ====================
+      const avatarFileInput = document.getElementById('avatarFileInput');
+      const profileAvatarImg = document.getElementById('profileAvatarImg');
+      const profileAvatarIcon = document.getElementById('profileAvatarIcon');
+      const headerAvatarImg = document.getElementById('headerAvatarImg');
+      const headerAvatarIcon = document.getElementById('headerAvatarIcon');
+      const removePhotoBtn = document.getElementById('removePhotoBtn');
+
+      const inputName = document.getElementById('inputName');
+      const inputEmail = document.getElementById('inputEmail');
+      const inputPhone = document.getElementById('inputPhone');
+      const inputCity = document.getElementById('inputCity');
+      const inputGoal = document.getElementById('inputGoal');
+      const inputNewPassword = document.getElementById('inputNewPassword');
+      const inputConfirmPassword = document.getElementById('inputConfirmPassword');
+
+      const displayUserName = document.getElementById('displayUserName');
+      const displayUserEmail = document.getElementById('displayUserEmail');
+      const profileForm = document.getElementById('profileForm');
+      const profileToast = document.getElementById('profileToast');
+
+      let currentAvatarDataUrl = '';
+
+      function applyAvatarVisual(dataUrl) {
+        if (dataUrl) {
+          profileAvatarImg.src = dataUrl;
+          profileAvatarImg.style.display = 'block';
+          profileAvatarIcon.style.display = 'none';
+
+          headerAvatarImg.src = dataUrl;
+          headerAvatarImg.style.display = 'block';
+          headerAvatarIcon.style.display = 'none';
+
+          removePhotoBtn.style.display = 'inline-block';
+        } else {
+          profileAvatarImg.src = '';
+          profileAvatarImg.style.display = 'none';
+          profileAvatarIcon.style.display = 'block';
+
+          headerAvatarImg.src = '';
+          headerAvatarImg.style.display = 'none';
+          headerAvatarIcon.style.display = 'block';
+
+          removePhotoBtn.style.display = 'none';
+        }
+      }
+
+      const savedProfile = JSON.parse(localStorage.getItem('roommatch_user_profile') || 'null');
+      if (savedProfile) {
+        inputName.value = savedProfile.name || inputName.value;
+        inputEmail.value = savedProfile.email || inputEmail.value;
+        inputPhone.value = savedProfile.phone || inputPhone.value;
+        inputCity.value = savedProfile.city || inputCity.value;
+        inputGoal.value = savedProfile.goal || inputGoal.value;
+        displayUserName.textContent = inputName.value;
+        displayUserEmail.textContent = inputEmail.value;
+        if (savedProfile.avatar) {
+          currentAvatarDataUrl = savedProfile.avatar;
+          applyAvatarVisual(currentAvatarDataUrl);
+        }
+      }
+
+      avatarFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          currentAvatarDataUrl = event.target.result;
+          applyAvatarVisual(currentAvatarDataUrl);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      removePhotoBtn.addEventListener('click', () => {
+        currentAvatarDataUrl = '';
+        avatarFileInput.value = '';
+        applyAvatarVisual('');
+      });
+
+      document.querySelectorAll('.toggle-pass-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetInput = document.getElementById(btn.getAttribute('data-target'));
+          const icon = btn.querySelector('i');
+          if (targetInput.type === 'password') {
+            targetInput.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+          } else {
+            targetInput.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+          }
+        });
+      });
+
+      profileForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        profileToast.className = 'toast-feedback';
+
+        if (inputNewPassword.value || inputConfirmPassword.value) {
+          if (inputNewPassword.value.length < 6) {
+            profileToast.textContent = 'A nova senha deve ter pelo menos 6 caracteres.';
+            profileToast.classList.add('error');
+            return;
+          }
+          if (inputNewPassword.value !== inputConfirmPassword.value) {
+            profileToast.textContent = 'As senhas digitadas não coincidem.';
+            profileToast.classList.add('error');
+            return;
+          }
+        }
+
+        const updatedData = {
+          name: inputName.value.trim(),
+          email: inputEmail.value.trim(),
+          phone: inputPhone.value.trim(),
+          city: inputCity.value.trim(),
+          goal: inputGoal.value,
+          avatar: currentAvatarDataUrl
+        };
+
+        localStorage.setItem('roommatch_user_profile', JSON.stringify(updatedData));
+
+        displayUserName.textContent = updatedData.name;
+        displayUserEmail.textContent = updatedData.email;
+        inputNewPassword.value = '';
+        inputConfirmPassword.value = '';
+
+        profileToast.textContent = 'Alterações salvas com sucesso!';
+        profileToast.classList.add('success');
+
+        setTimeout(() => {
+          profileToast.className = 'toast-feedback';
+        }, 3500);
+      });
+    });
+  </script>
+</body>
+</html>

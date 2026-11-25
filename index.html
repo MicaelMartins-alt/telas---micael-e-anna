@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoomMatch</title>
+  
+  <!-- Fontes & Ícones -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Estilos Externos -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="page-container">
+
+    <!-- CABEÇALHO COM NAVEGAÇÃO -->
+    <header class="navbar">
+      <div class="logo">
+        <img src="Roomatch-logo.png" alt="ROOMMATCH Logo" class="brand-logo-img">
+      </div>
+
+      <!-- TOGGLE COM BALÃO INDICADOR DESLIZANTE -->
+      <nav class="nav-toggle" id="navToggle">
+        <div class="nav-indicator"></div>
+        <button class="toggle-btn active" data-tab="home-page">Home</button>
+        <button class="toggle-btn" data-tab="imobiliarias-page">Imobiliárias</button>
+      </nav>
+
+      <div class="user-avatar" title="Perfil">
+        <i class="fa-solid fa-user"></i>
+      </div>
+    </header>
+
+    <!-- ==================== PÁGINA 1: HOME ==================== -->
+    <div id="home-page" class="tab-content active-tab">
+      
+      <!-- BARRA DE BUSCA -->
+      <div class="search-container">
+        <div class="search-bar">
+          <button class="search-pill">Localização</button>
+          <button class="search-pill">Tipo</button>
+          <button class="search-pill">Preferências</button>
+          <button class="search-btn" aria-label="Buscar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- CONTEÚDO PRINCIPAL (MAPA + CARDS) -->
+      <main class="main-content">
+        <div class="map-wrapper">
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d467690.1438961028!2d-46.92495935413983!3d-23.682063548955284!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce448183a461d1%3A0x9ba94b08ff335bae!2zU8OjbyBQYXVsbywgU1A!5e0!3m2!1spt-BR!2sbr!4v1793384687220!5m2!1spt-BR!2sbr" 
+            width="100%" 
+            height="100%" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy">
+          </iframe>
+        </div>
+
+        <section class="cards-grid">
+          
+          <!-- CARD 1 -->
+          <article class="card">
+            <div class="card-image-container">
+              <img class="card-img" src="Casa-case1.jpg" alt="Sorocaba, São Paulo">
+              
+              <div class="card-badge">
+                <button class="heart-icon" aria-label="Favoritar"><i class="fa-regular fa-heart"></i></button>
+                <span class="rating">4.3 <i class="fa-solid fa-star"></i></span>
+              </div>
+              
+              <div class="glass-overlay">
+                <div class="location-title">
+                  <i class="fa-solid fa-location-dot"></i>
+                  Sorocaba, São Paulo
+                </div>
+                <div class="card-footer">
+                  <div class="sub-logo">
+                    <img src="Franciosi-circle-Icon.jpeg" alt="Logo" class="logo-img">
+                  </div>
+                  <a href="imoveis.html" class="more-btn">Mais sobre ...</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 2 -->
+          <article class="card">
+            <div class="card-image-container">
+              <img class="card-img" src="Apartamento-case2.jpg" alt="Campinas, São Paulo">
+              
+              <div class="card-badge">
+                <button class="heart-icon" aria-label="Favoritar"><i class="fa-regular fa-heart"></i></button>
+                <span class="rating">5.0 <i class="fa-solid fa-star"></i></span>
+              </div>
+              
+              <div class="glass-overlay">
+                <div class="location-title">
+                  <i class="fa-solid fa-location-dot"></i>
+                  Campinas, São Paulo
+                </div>
+                <div class="card-footer">
+                  <div class="sub-logo">
+                    <img src="Franciosi-circle-Icon.jpeg" alt="Logo" class="logo-img">
+                  </div>
+                  <a href="imoveis.html" class="more-btn">Mais sobre ...</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 3 -->
+          <article class="card">
+            <div class="card-image-container">
+              <img class="card-img" src="Apartamento-case3.jpg" alt="Brasília, Distrito Federal">
+              
+              <div class="card-badge">
+                <button class="heart-icon" aria-label="Favoritar"><i class="fa-regular fa-heart"></i></button>
+                <span class="rating">4.7 <i class="fa-solid fa-star"></i></span>
+              </div>
+              
+              <div class="glass-overlay">
+                <div class="location-title">
+                  <i class="fa-solid fa-location-dot"></i>
+                  Brasília, Distrito Federal
+                </div>
+                <div class="card-footer">
+                  <div class="sub-logo">
+                    <img src="remax-logo.png" alt="Logo" class="logo-img">
+                  </div>
+                  <a href="imoveis.html" class="more-btn">Mais sobre ...</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 4 -->
+          <article class="card">
+            <div class="card-image-container">
+              <img class="card-img" src="Casa-case4.jpg" alt="São Paulo, São Paulo">
+              
+              <div class="card-badge">
+                <button class="heart-icon" aria-label="Favoritar"><i class="fa-regular fa-heart"></i></button>
+                <span class="rating">4.9 <i class="fa-solid fa-star"></i></span>
+              </div>
+              
+              <div class="glass-overlay">
+                <div class="location-title">
+                  <i class="fa-solid fa-location-dot"></i>
+                  São Paulo, São Paulo
+                </div>
+                <div class="card-footer">
+                  <div class="sub-logo">
+                    <img src="Franciosi-circle-Icon.jpeg" alt="Logo" class="logo-img">
+                  </div>
+                  <a href="imoveis.html" class="more-btn">Mais sobre ...</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 5 -->
+          <article class="card">
+            <div class="card-image-container">
+              <img class="card-img" src="Cobertura-case5.webp" alt="Barueri, São Paulo">
+              
+              <div class="card-badge">
+                <button class="heart-icon" aria-label="Favoritar"><i class="fa-regular fa-heart"></i></button>
+                <span class="rating">4.4 <i class="fa-solid fa-star"></i></span>
+              </div>
+              
+              <div class="glass-overlay">
+                <div class="location-title">
+                  <i class="fa-solid fa-location-dot"></i>
+                  Barueri, São Paulo
+                </div>
+                <div class="card-footer">
+                  <div class="sub-logo">
+                    <img src="remax-logo.png" alt="Logo" class="logo-img">
+                  </div>
+                  <a href="imoveis.html" class="more-btn">Mais sobre ...</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 6 -->
+          <article class="card">
+            <div class="card-image-container">
+              <img class="card-img" src="Apartamento-case6.jpg" alt="Guarulhos, São Paulo">
+              
+              <div class="card-badge">
+                <button class="heart-icon" aria-label="Favoritar"><i class="fa-regular fa-heart"></i></button>
+                <span class="rating">4.4 <i class="fa-solid fa-star"></i></span>
+              </div>
+              
+              <div class="glass-overlay">
+                <div class="location-title">
+                  <i class="fa-solid fa-location-dot"></i>
+                  Guarulhos, São Paulo
+                </div>
+                <div class="card-footer">
+                  <div class="sub-logo">
+                    <img src="remax-logo.png" alt="Logo" class="logo-img">
+                  </div>
+                  <a href="imoveis.html" class="more-btn">Mais sobre ...</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+        </section>
+      </main>
+    </div>
+
+    <!-- ==================== PÁGINA 2: IMOBILIÁRIAS ==================== -->
+    <div id="imobiliarias-page" class="tab-content">
+      <hr class="header-divider">
+
+      <section class="headline-section">
+        <span class="headline-badge">Parceiros Oficiais</span>
+        <h1 class="headline-title">
+          SUA BUSCA PELO IMÓVEL IDEAL COMEÇA<br>
+          ESCOLHENDO QUEM MELHOR TE ENTENDE!
+        </h1>
+      </section>
+
+      <main class="realty-grid">
+        <!-- CARD 1 -->
+        <article class="realty-card card-blue">
+          <div class="card-image-wrapper">
+            <img src="sua-imagem-franciosi.jpg" alt="Franciosi Imóveis" class="card-cover-img">
+            <div class="card-image-overlay"></div>
+          </div>
+          <div class="logo-pill pill-blue">
+            <span class="agency-name text-franciosi">Franciosi <small>IMÓVEIS</small></span>
+          </div>
+          <div class="card-footer">
+            <a href="#" class="saiba-mais-btn">
+              Saiba mais <i class="fa-solid fa-arrow-right-long icon-arrow"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- CARD 2 -->
+        <article class="realty-card card-yellow">
+          <div class="card-image-wrapper">
+            <img src="sua-imagem-remax.jpg" alt="RE/MAX" class="card-cover-img">
+            <div class="card-image-overlay"></div>
+          </div>
+          <div class="logo-pill pill-yellow">
+            <span class="agency-name text-remax">RE/MAX</span>
+          </div>
+          <div class="card-footer">
+            <a href="#" class="saiba-mais-btn">
+              Saiba mais <i class="fa-solid fa-arrow-right-long icon-arrow"></i>
+            </a>
+          </div>
+        </article>
+
+        <!-- CARD 3 -->
+        <article class="realty-card card-green">
+          <div class="card-image-wrapper">
+            <img src="sua-imagem-cbre.jpg" alt="CBRE" class="card-cover-img">
+            <div class="card-image-overlay"></div>
+          </div>
+          <div class="logo-pill pill-green">
+            <span class="agency-name text-cbre">CBRE</span>
+          </div>
+          <div class="card-footer">
+            <a href="#" class="saiba-mais-btn">
+              Saiba mais <i class="fa-solid fa-arrow-right-long icon-arrow"></i>
+            </a>
+          </div>
+        </article>
+      </main>
+    </div>
+
+  </div>
+
+  <!-- SCRIPT NAVEGAÇÃO E ANIMAÇÃO DA ABA -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleBtns = document.querySelectorAll('.toggle-btn');
+      const indicator = document.querySelector('.nav-indicator');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      function updateIndicator(activeBtn) {
+        if (!activeBtn) return;
+        indicator.style.width = `${activeBtn.offsetWidth}px`;
+        indicator.style.left = `${activeBtn.offsetLeft}px`;
+      }
+
+      const initialActive = document.querySelector('.toggle-btn.active');
+      if (initialActive) {
+        updateIndicator(initialActive);
+      }
+
+      toggleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          toggleBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          updateIndicator(btn);
+
+          const targetTabId = btn.getAttribute('data-tab');
+          tabContents.forEach(content => {
+            if (content.id === targetTabId) {
+              content.classList.add('active-tab');
+            } else {
+              content.classList.remove('active-tab');
+            }
+          });
+        });
+      });
+
+      window.addEventListener('resize', () => {
+        const currentActive = document.querySelector('.toggle-btn.active');
+        if (currentActive) updateIndicator(currentActive);
+      });
+
+      // Interatividade do Botão Favoritar
+      const heartButtons = document.querySelectorAll('.heart-icon');
+      heartButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('active');
+          const icon = btn.querySelector('i');
+          if (btn.classList.contains('active')) {
+            icon.classList.remove('fa-regular');
+            icon.classList.add('fa-solid');
+          } else {
+            icon.classList.remove('fa-solid');
+            icon.classList.add('fa-regular');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
